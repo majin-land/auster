@@ -1,0 +1,43 @@
+{
+  "name": "auster",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Money management system",
+  "engines": {
+    "node": ">=12",
+    "npm": ">=6.5",
+    "yarn": ">=1.19.2"
+  },
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ]
+  },
+  "scripts": {
+    "lint": "eslint packages/**",
+    "lint:alone": "eslint --ext js,jsx,mdx",
+    "lintdiff": "FILES=$(for NAME in $(git diff --name-only --diff-filter=d --cached --relative); do if [[ $NAME =~ .*.js$ ]]; then echo ./$NAME; fi; done) && echo $FILES | xargs npm run lint:alone",
+    "dev": "yarn wsrun dev",
+    "test": "mocha 'packages/**/*.test.js'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com/imajindev/auster.git"
+  },
+  "author": "IMAJIN",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-eslint": "^8.2.6",
+    "eslint": "^6.8.0",
+    "eslint-import-resolver-alias": "^1.1.2",
+    "eslint-plugin-import": "^2.20.2",
+    "husky": "^4.2.5",
+    "mocha": "^6.2.2",
+    "wsrun": "^5.2.0"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lintdiff"
+    }
+  }
+}

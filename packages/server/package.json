@@ -1,0 +1,50 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Money management system NodeJS web server",
+  "main": "index.js",
+  "scripts": {
+    "generate": "sequelize migration:generate --name $1",
+    "migrate": "sequelize db:migrate",
+    "migrate:undo": "sequelize db:migrate:undo",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "predev": "npm run migrate",
+    "dev": "nodemon index.js",
+    "start": "node index.js"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "node_modules/*"
+    ],
+    "delay": "100"
+  },
+  "author": "IMAJIN",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^0.19.0",
+    "body-parser": "^1.19.0",
+    "compression": "^1.7.4",
+    "cors": "^2.8.5",
+    "dotenv": "^6.2.0",
+    "express": "^4.17.1",
+    "express-async-errors": "^3.1.1",
+    "express-useragent": "^1.0.12",
+    "frameguard": "^3.1.0",
+    "hashids": "^1.2.2",
+    "helmet": "^3.21.1",
+    "moment": "^2.24.0",
+    "nocache": "^2.1.0",
+    "pg": "^7.17.0",
+    "qs": "^6.9.4",
+    "request-ip": "^2.1.3",
+    "require-dir": "^1.2.0",
+    "sequelize": "^5.21.3",
+    "umzug": "^2.2.0",
+    "uuid-validate": "0.0.3"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.2",
+    "sequelize-cli": "^5.5.0"
+  }
+}

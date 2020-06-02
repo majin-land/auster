@@ -1,0 +1,17 @@
+**/node_modules/**
+**/coverage/**
+**/public/**
+**/.serverless/**
+**/.webpack/**
+**/*.Dockerfile
+**/*.sh
+**/*.lock
+**/*.toml
+**/*.txt
+**/*.md
+**/*.scss
+**/*.sass
+**/*.policy
+**/*.html
+**/*.json
+**/*.ejs
