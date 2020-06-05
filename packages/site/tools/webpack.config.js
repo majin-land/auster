@@ -18,7 +18,6 @@ const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin')
 const CopyPlugin = require('copy-webpack-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
-const PnpWebpackPlugin = require('pnp-webpack-plugin')
 
 const isVerbose = process.argv.includes('--verbose') || process.argv.includes('-v')
 
@@ -62,15 +61,6 @@ const config = {
       // 'react-dom': '@hot-loader/react-dom',
       '~': path.resolve(__dirname, '../'),
     },
-    plugins: [
-      PnpWebpackPlugin,
-    ],
-  },
-
-  resolveLoader: {
-    plugins: [
-      PnpWebpackPlugin.moduleLoader(module),
-    ],
   },
 
   // What information should be printed to the console
