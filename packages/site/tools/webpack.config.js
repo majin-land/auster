@@ -16,7 +16,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const Dotenv = require('dotenv-webpack')
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin')
-const CopyWebpackPlugin = require('copy-webpack-plugin')
+const CopyPlugin = require('copy-webpack-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const PnpWebpackPlugin = require('pnp-webpack-plugin')
 
@@ -57,6 +57,7 @@ const config = {
   devtool: isDebug ? 'source-map' : false,
 
   resolve: {
+    symlinks: false,
     alias: {
       // 'react-dom': '@hot-loader/react-dom',
       '~': path.resolve(__dirname, '../'),
@@ -83,6 +84,7 @@ const config = {
     chunkModules: isVerbose,
     cached: isVerbose,
     cachedAssets: isVerbose,
+    modules: false,
   },
 
   // The list of plugins for Webpack compiler
@@ -117,21 +119,33 @@ const config = {
       },
     }),
     new CaseSensitivePathsPlugin(),
-    new CopyWebpackPlugin([path.resolve(__dirname, '../assets')]),
+    new CopyPlugin({
+      patterns: [
+        path.resolve(__dirname, '../assets'),
+      ],
+    }),
   ],
 
   // Options affecting the normal modules
   module: {
     rules: [
       {
-        test: /\.jsx?$/,
+        test: /\.js$/,
+        exclude: [/[/\\\\]node_modules[/\\\\]/], // exclude node_modules folder per default
         include: [
           path.resolve(__dirname, '../src'),
         ],
         use: [
           {
+            loader: 'thread-loader',
+          },
+          {
             loader: 'babel-loader',
-            options: { ...babelConfig, cacheDirectory: isDebug },
+            options: {
+              ...babelConfig,
+              cacheDirectory: isDebug,
+              compact: true,
+            },
           },
         ],
       },
@@ -143,14 +157,7 @@ const config = {
         ],
       },
       {
-        test: /\.(png|jpg|jpeg|gif|svg|woff|woff2|ico)$/,
-        loader: 'url-loader',
-        options: {
-          limit: 10000,
-        },
-      },
-      {
-        test: /\.(eot|ttf|wav|mp3|csv|mp4)$/,
+        test: /\.(png|jpg|jpeg|gif|svg|woff|woff2|ico|eot|ttf|wav|mp3|csv|mp4)$/,
         loader: 'file-loader',
         query: {
           name: '[name].[ext]',

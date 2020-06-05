@@ -1,6 +1,7 @@
 const path = require('path')
 
 module.exports = {
+  root: true,
   env: {
     browser: false,
     commonjs: true,
@@ -21,7 +22,7 @@ module.exports = {
       jsx: true,
       classes: true,
     },
-    sourceType: 'module'
+    sourceType: 'module',
   },
   plugins: ['import'],
   rules: {
@@ -52,9 +53,9 @@ module.exports = {
     'object-curly-newline': [0],
     'object-curly-spacing': ['error', 'always'],
     'operator-linebreak': ['error', 'after'],
-    'prefer-destructuring': ["error", {
-      "array": false,
-      "object": true
+    'prefer-destructuring': ['error', {
+      array: false,
+      object: true,
     }],
 
     // import
@@ -83,4 +84,4 @@ module.exports = {
       },
     },
   },
-};
+}

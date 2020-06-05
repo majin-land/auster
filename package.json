@@ -27,12 +27,13 @@
   "author": "IMAJIN",
   "license": "MIT",
   "devDependencies": {
-    "babel-eslint": "^8.2.6",
-    "eslint": "^6.8.0",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^7.1.0",
     "eslint-import-resolver-alias": "^1.1.2",
     "eslint-plugin-import": "^2.20.2",
     "husky": "^4.2.5",
-    "mocha": "^6.2.2",
+    "mocha": "^7.2.0",
+    "qs": "^6.9.4",
     "wsrun": "^5.2.0"
   },
   "husky": {

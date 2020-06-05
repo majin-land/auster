@@ -15,8 +15,8 @@ module.exports = {
     document: true,
     navigator: true,
     graphql: false,
-    '__VERSION__': true,
-    '__ENV__': true,
+    __VERSION__: true,
+    __ENV__: true,
   },
   plugins: ['react', 'react-hooks'],
   rules: {
@@ -32,17 +32,17 @@ module.exports = {
     'react/no-unescaped-entities': 0,
     'react/prop-types': 0,
     'react/prefer-stateless-function': 0,
-    'react/sort-comp' : 0,
-
-    'jsx-a11y/anchor-is-valid': [ 'error', {
-      components: [ 'Link' ],
-      specialLink: [ 'to' ],
-      aspects: [ 'noHref', 'invalidHref', 'preferButton' ]
+    'react/sort-comp': 0,
+    // jsx-a11y
+    'jsx-a11y/anchor-is-valid': ['error', {
+      components: ['Link'],
+      specialLink: ['to'],
+      aspects: ['noHref', 'invalidHref', 'preferButton'],
     }],
     'jsx-a11y/click-events-have-key-events': 0,
     'jsx-a11y/label-has-for': 0,
     'jsx-a11y/no-static-element-interactions': 0,
-    'jsx-a11y/no-noninteractive-element-interactions': 0
+    'jsx-a11y/no-noninteractive-element-interactions': 0,
   },
   settings: {
     'import/resolver': {
