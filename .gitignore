@@ -37,6 +37,7 @@ dist
 
 .gitconfig
 .nvmrc
+.prettierrc
 
 .yarn/*
 !.yarn/cache
