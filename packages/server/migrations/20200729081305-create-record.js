@@ -35,6 +35,11 @@ module.exports = {
           defaultValue: Sequelize.NOW,
           allowNull: false,
         },
+        deleted_at: {
+          type: Sequelize.DATE,
+          defaultValue: Sequelize.NOW,
+          allowNull: true,
+        },
       })
       await queryInterface.addIndex('Record', {
         name: 'record_category_index',

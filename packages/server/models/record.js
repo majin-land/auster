@@ -21,7 +21,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: 0,
     },
-    transaction_date: {
+    transactionDate: {
       type: DataTypes.DATE,
       allowNull: false,
     },
