@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     categoryId: {
       type: DataTypes.BIGINT,
-      allowNull: false,
+      allowNull: true,
     },
     amount: {
       type: DataTypes.DECIMAL(12, 2),
@@ -38,7 +38,7 @@ module.exports = (sequelize, DataTypes) => {
   })
 
   Record.associate = function (models) {
-    Record.belongsTo(models.Category)
+    Record.belongsTo(models.Category, { as: 'category' })
   }
 
   Record.prototype.display = function () {

@@ -7,6 +7,8 @@ router.get('/', async (req, res) => {
     include: [
       {
         model: Category,
+        as: 'category',
+        required: false,
       },
     ],
   })
@@ -20,7 +22,17 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   const where = { id: req.params.id }
 
-  const record = await Record.findOne({ where })
+  const record = await Record.findOne({
+    where,
+    include: [
+      {
+        model: Category,
+        as: 'category',
+        required: false,
+      },
+    ],
+  })
+
   if (!record) throw new Error('Record not found')
 
   res.json(record.display())

@@ -14,7 +14,7 @@ module.exports = {
         },
         category_id: {
           type: Sequelize.BIGINT,
-          allowNull: false,
+          allowNull: true,
         },
         amount: {
           type: Sequelize.DECIMAL(12, 2),
