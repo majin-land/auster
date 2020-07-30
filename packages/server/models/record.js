@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: 'expense',
       allowNull: false,
     },
-    category: {
+    categoryId: {
       type: DataTypes.BIGINT,
       allowNull: false,
     },
@@ -36,6 +36,10 @@ module.exports = (sequelize, DataTypes) => {
       },
     },
   })
+
+  Record.associate = function (models) {
+    Record.belongsTo(models.Category)
+  }
 
   Record.prototype.display = function () {
     return this.get({ plain: true })

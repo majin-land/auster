@@ -1,9 +1,15 @@
 const router = require('express').Router()
 
-const { Record } = require('../models')
+const { Record, Category } = require('../models')
 
 router.get('/', async (req, res) => {
-  const result = await Record.findAndCountAll()
+  const result = await Record.findAndCountAll({
+    include: [
+      {
+        model: Category,
+      },
+    ],
+  })
 
   res.json({
     list: result.rows.map(record => record.display()),
@@ -21,11 +27,11 @@ router.get('/:id', async (req, res) => {
 })
 
 router.post('/', async (req, res) => {
-  const { type, category, amount, transactionDate } = req.body
+  const { type, categoryId, amount, transactionDate } = req.body
 
   const record = await Record.create({
     type,
-    category,
+    categoryId,
     amount,
     transactionDate,
   })
@@ -38,7 +44,7 @@ router.put('/:id', async (req, res) => {
 
   const record = await Record.findOne({ where })
   record.type = req.body.type
-  record.category = req.body.category
+  record.categoryId = req.body.categoryId
   record.amount = req.body.amount
   record.transactionDate = req.body.transactionDate
 

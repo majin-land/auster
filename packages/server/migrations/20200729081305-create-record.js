@@ -12,7 +12,7 @@ module.exports = {
           defaultValue: 'expense',
           allowNull: false,
         },
-        category: {
+        category_id: {
           type: Sequelize.BIGINT,
           allowNull: false,
         },
@@ -42,8 +42,8 @@ module.exports = {
         },
       })
       await queryInterface.addIndex('Record', {
-        name: 'record_category_index',
-        fields: ['category'],
+        name: 'record_category_id_index',
+        fields: ['category_id'],
       })
     }),
   down: (queryInterface) => {
