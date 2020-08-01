@@ -34,6 +34,15 @@ module.exports = (sequelize, DataTypes) => {
     },
   })
 
+  User.validatePassword = (email, password) => {
+    return User.findOne({
+      where: {
+        email,
+        password: sequelize.fn('crypt', password, sequelize.col('password')),
+      },
+    })
+  }
+
   User.prototype.display = function () {
     return this.get({ plain: true })
   }

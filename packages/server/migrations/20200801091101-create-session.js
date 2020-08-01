@@ -1,28 +1,21 @@
 module.exports = {
   up: (queryInterface, Sequelize) => Promise.resolve()
     .then(async () => {
-      await queryInterface.createTable('User', {
+      await queryInterface.createTable('Session', {
         id: {
           type: Sequelize.BIGINT,
           primaryKey: true,
           autoIncrement: true,
         },
-        name: {
+        user_id: {
+          type: Sequelize.BIGINT,
+          allowNull: false,
+          defaultValue: 0,
+        },
+        token: {
           type: Sequelize.TEXT,
           allowNull: false,
           defaultValue: '',
-        },
-        email: {
-          type: Sequelize.TEXT,
-          allowNull: false,
-          defaultValue: '',
-        },
-        password: {
-          type: Sequelize.TEXT,
-          allowNull: false,
-          set(password) {
-            this.setDataValue('password', sequelize.fn('crypt', password, sequelize.fn('gen_salt', 'md5')))
-          },
         },
         created_at: {
           type: Sequelize.DATE,
@@ -40,8 +33,12 @@ module.exports = {
           allowNull: true,
         },
       })
+      await queryInterface.addIndex('Session', {
+        name: 'session_user_id_index',
+        fields: ['user_id'],
+      })
     }),
   down: (queryInterface) => {
-    return queryInterface.dropTable('User')
+    return queryInterface.dropTable('Session')
   },
 }
