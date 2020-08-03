@@ -12,9 +12,10 @@ import styles from './styles'
 
 const useStyles = makeStyles(styles)
 
-const Login = () => {
+const Register = () => {
   const classes = useStyles()
 
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
@@ -28,6 +29,18 @@ const Login = () => {
         </div>
         <div>
           <form>
+            <FormControl fullWidth style={{ marginBottom: '1rem' }}>
+              <TextField
+                autoFocus
+                fullWidth
+                label="name"
+                value={name}
+                onChange={(event) => setName(event.target.value)}
+                type="text"
+                name="name"
+                required
+              />
+            </FormControl>
             <FormControl fullWidth style={{ marginBottom: '1rem' }}>
               <TextField
                 autoFocus
@@ -60,13 +73,13 @@ const Login = () => {
                 fullWidth
                 color="primary"
               >
-                Login
+                Register
               </Button>
             </div>
             <div className={classes.textCenter}>
-              Don't have an account?
-              <Link className={classes.textLinkSignup} to="/register">
-                Sign up
+              Have you an account?
+              <Link className={classes.textLinkSignup} to="/login">
+                Sign in
               </Link>
             </div>
           </form>
@@ -76,4 +89,4 @@ const Login = () => {
   )
 }
 
-export default Login
+export default Register

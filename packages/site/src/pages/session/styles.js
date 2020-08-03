@@ -1,4 +1,4 @@
-export default () => ({
+export default (theme) => ({
   wrapper: {
     display: 'flex',
     justifyContent: 'center',
@@ -15,5 +15,14 @@ export default () => ({
   },
   textStyle: {
     fontSize: '2rem',
+  },
+  textLinkSignup: {
+    textDecoration: 'none',
+    color: theme.color.primary,
+    marginLeft: '5px',
+  },
+  textCenter: {
+    display: 'flex',
+    justifyContent: 'center',
   },
 })
