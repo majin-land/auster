@@ -1,9 +1,12 @@
 import { create } from 'mobx-persist'
 import { RouterStore } from 'mobx-react-router'
 
+import SessionStore from './session'
+
 class RootStore {
   constructor() {
     this.routing = new RouterStore()
+    this.sessionStore = new SessionStore()
   }
 }
 

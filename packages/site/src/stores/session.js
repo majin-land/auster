@@ -1,6 +1,7 @@
 import { observable, flow, action } from 'mobx'
 import { persist } from 'mobx-persist'
 
+import { setApiAuth } from '~/src/services/api'
 import sessionService from '~/src/services/session'
 
 export default class SessionStore {
@@ -35,7 +36,7 @@ export default class SessionStore {
 
   current = flow(function* () {
     try {
-      const response = yield srv.session()
+      const response = yield sessionService.session()
       if (response.ok) {
         const user = response.data
         this.user = user

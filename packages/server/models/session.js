@@ -1,4 +1,5 @@
 const moment = require('moment')
+const { randomString } = require('../utils/helper')
 
 module.exports = (sequelize, DataTypes) => {
   const Session = sequelize.define('Session', {
@@ -36,13 +37,10 @@ module.exports = (sequelize, DataTypes) => {
 
       await Session.destroy({ where: { userId: id }, transaction })
 
-      const session = await Session.create(
-        {
+      const session = await Session.create({
           userId: id,
           token: randomString(20),
-        },
-        { transaction },
-      )
+        }, { transaction })
 
       await transaction.commit()
 

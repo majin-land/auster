@@ -8,6 +8,8 @@ import {
   TextField,
 } from '@material-ui/core'
 
+import { useStores } from '~/src/hooks'
+
 import styles from './styles'
 
 const useStyles = makeStyles(styles)
@@ -15,8 +17,21 @@ const useStyles = makeStyles(styles)
 const Login = () => {
   const classes = useStyles()
 
+  const { sessionStore, routing } = useStores()
+
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+
+  const handleSubmit = async () => {
+    try {
+      await sessionStore.login({ email, password })
+      if (!sessionStore.user) return
+
+      routing.push('/')
+    } catch (err) {
+      console.log(err)
+    }
+  }
 
   return (
     <div className={classes.wrapper}>
@@ -55,10 +70,10 @@ const Login = () => {
             <div>
               <Button
                 variant="contained"
-                type="submit"
                 size="large"
                 fullWidth
                 color="primary"
+                onClick={handleSubmit}
               >
                 Login
               </Button>
