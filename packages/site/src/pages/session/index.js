@@ -65,7 +65,7 @@ const Login = () => {
             </div>
             <div className={classes.textCenter}>
               Don't have an account?
-              <Link className={classes.textLinkSignup} to="/register">
+              <Link className={classes.textLink} to="/register">
                 Sign up
               </Link>
             </div>

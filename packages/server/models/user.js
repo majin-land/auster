@@ -20,7 +20,9 @@ module.exports = (sequelize, DataTypes) => {
     password: {
       type: DataTypes.TEXT,
       allowNull: false,
-      defaultValue: '',
+      set(password) {
+        this.setDataValue('password', sequelize.fn('crypt', password, sequelize.fn('gen_salt', 'md5')))
+      },
     },
   }, {
     paranoid: true,

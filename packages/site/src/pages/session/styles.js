@@ -16,7 +16,7 @@ export default (theme) => ({
   textStyle: {
     fontSize: '2rem',
   },
-  textLinkSignup: {
+  textLink: {
     textDecoration: 'none',
     color: theme.color.primary,
     marginLeft: '5px',

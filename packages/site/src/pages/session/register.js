@@ -8,16 +8,34 @@ import {
   TextField,
 } from '@material-ui/core'
 
+import { useStores } from '~/src/hooks'
+import sessionService from '~/src/services/session'
+
 import styles from './styles'
 
 const useStyles = makeStyles(styles)
 
 const Register = () => {
   const classes = useStyles()
+  const { routing } = useStores()
 
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+
+  const handleSubmit = async () => {
+    try {
+      await sessionService.register({
+        name,
+        email,
+        password,
+      })
+
+      routing.push('/login')
+    } catch (err) {
+      console.log(err.message)
+    }
+  }
 
   return (
     <div className={classes.wrapper}>
@@ -28,7 +46,7 @@ const Register = () => {
           </div>
         </div>
         <div>
-          <form>
+          <form noValidate autoComplete="off">
             <FormControl fullWidth style={{ marginBottom: '1rem' }}>
               <TextField
                 autoFocus
@@ -68,17 +86,17 @@ const Register = () => {
             <div>
               <Button
                 variant="contained"
-                type="submit"
                 size="large"
                 fullWidth
                 color="primary"
+                onClick={handleSubmit}
               >
                 Register
               </Button>
             </div>
             <div className={classes.textCenter}>
               Have you an account?
-              <Link className={classes.textLinkSignup} to="/login">
+              <Link className={classes.textLink} to="/login">
                 Sign in
               </Link>
             </div>

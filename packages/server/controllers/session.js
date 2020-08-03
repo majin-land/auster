@@ -32,7 +32,6 @@ router.post('/login', async (req, res) => {
 })
 
 router.post('/register', async (req, res, next) => {
-  let transaction = null
   try {
     const {
       name,
@@ -44,9 +43,7 @@ router.post('/register', async (req, res, next) => {
     if (!email) throw new Error('Email is required')
     if (!password) throw new Error('Password is required')
 
-    transaction = await sequelize.transaction()
-
-    const existingUser = await User.findOne({ where: { email }, transaction })
+    const existingUser = await User.findOne({ where: { email } })
     if (existingUser) throw new Error('User email is already used')
 
     // create user
@@ -54,15 +51,11 @@ router.post('/register', async (req, res, next) => {
       name,
       email,
       password,
-    }, { transaction })
-
-    await transaction.commit()
+    })
 
     res.json(user.display())
-
   } catch (e) {
-    console.error('ERROR in registering new entity', e)
-    if (transaction) await transaction.rollback()
+    console.error('ERROR in registering new user', e)
     next(e)
   }
 })
