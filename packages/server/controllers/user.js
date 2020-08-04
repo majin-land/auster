@@ -30,7 +30,7 @@ router.post('/', async (req, res) => {
   if (!email) throw new Error('Email is required')
   if (!password) throw new Error('Password is required')
 
-  const existingUser = await User.findOne({ where: { email }})
+  const existingUser = await User.findOne({ where: { email } })
   if (existingUser) throw new Error('User email is already used')
 
   const user = await User.create({

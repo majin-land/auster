@@ -7,14 +7,18 @@ module.exports = {
           primaryKey: true,
           autoIncrement: true,
         },
-        type: {
-          type: Sequelize.TEXT,
-          defaultValue: 'expense',
+        user_id: {
+          type: Sequelize.BIGINT,
           allowNull: false,
         },
         category_id: {
           type: Sequelize.BIGINT,
           allowNull: true,
+        },
+        type: {
+          type: Sequelize.TEXT,
+          defaultValue: 'expense',
+          allowNull: false,
         },
         amount: {
           type: Sequelize.DECIMAL(12, 2),

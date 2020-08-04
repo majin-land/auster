@@ -10,7 +10,6 @@ module.exports = {
         user_id: {
           type: Sequelize.BIGINT,
           allowNull: false,
-          defaultValue: 0,
         },
         token: {
           type: Sequelize.TEXT,

@@ -12,7 +12,9 @@ router.get('/', async (req, res) => {
 })
 
 router.get('/:id', async (req, res) => {
-  const where = { id: req.params.id }
+  const where = {
+    id: req.params.id,
+  }
 
   const category = await Category.findOne({ where })
   if (!category) throw new Error('Category not found')
@@ -29,10 +31,12 @@ router.post('/', async (req, res) => {
 })
 
 router.put('/:id', async (req, res) => {
-  const where = { id: req.params.id }
+  const where = {
+    id: req.params.id,
+  }
 
   const category = await Category.findOne({ where })
-  record.name = req.body.name
+  category.name = req.body.name
 
   await category.save()
 

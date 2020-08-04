@@ -4,8 +4,9 @@ import { setConfig } from 'react-hot-loader'
 import { makeStyles } from '@material-ui/core/styles'
 
 import { ENV } from './config'
-
-import RoutesNotLoggedIn from './routes-not-loggedin'
+import { useGlobalState } from './state'
+import { RoutesNotLoggedIn, RoutesLoggedIn } from './routes'
+import { session } from '~/src/services'
 
 import styles from './styles'
 
@@ -13,11 +14,17 @@ const useStyles = makeStyles(styles)
 
 const App = () => {
   const classes = useStyles()
+  const [accessToken] = useGlobalState('accessToken')
+  if (accessToken) {
+    session().then((response) => {
+      console.log(response)
+    })
+  }
 
   return (
-    <div className={classes.rootContainer}>
-      <RoutesNotLoggedIn/>
-    </div>
+    <main className={classes.rootContainer}>
+      {accessToken ? <RoutesLoggedIn /> : <RoutesNotLoggedIn />}
+    </main>
   )
 }
 

@@ -1,5 +1,5 @@
-import React, { useState }  from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState } from 'react'
+import { Link, useHistory } from 'react-router-dom'
 import { makeStyles } from '@material-ui/core/styles'
 
 import {
@@ -8,8 +8,10 @@ import {
   TextField,
 } from '@material-ui/core'
 
-import { useStores } from '~/src/hooks'
-import sessionService from '~/src/services/session'
+import { useRequest } from '~/src/hooks'
+import { useGlobalState, saveState } from '~/src/state'
+import { register, session } from '~/src/services'
+import { setApiAuth } from '~/src/services/api'
 
 import styles from './styles'
 
@@ -17,24 +19,28 @@ const useStyles = makeStyles(styles)
 
 const Register = () => {
   const classes = useStyles()
-  const { routing } = useStores()
+  const history = useHistory()
 
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
-  const handleSubmit = async () => {
-    try {
-      await sessionService.register({
-        name,
-        email,
-        password,
-      })
+  const { isLoading, error, request } = useRequest(register)
+  const [, setAccessToken] = useGlobalState('accessToken')
+  const [, setUser] = useGlobalState('user')
 
-      routing.push('/login')
-    } catch (err) {
-      console.log(err.message)
-    }
+  const handleSubmit = async () => {
+    const { data: { accessToken } } = await request({
+      name,
+      email,
+      password,
+    })
+    setApiAuth(accessToken)
+    setAccessToken(accessToken)
+    const { data: user } = await session()
+    setUser(user)
+    saveState()
+    history.replace('/')
   }
 
   return (
@@ -84,12 +90,14 @@ const Register = () => {
               />
             </FormControl>
             <div>
+              {error && <div>{error.message}</div>}
               <Button
                 variant="contained"
                 size="large"
                 fullWidth
                 color="primary"
                 onClick={handleSubmit}
+                disabled={isLoading}
               >
                 Register
               </Button>

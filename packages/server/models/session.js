@@ -11,12 +11,10 @@ module.exports = (sequelize, DataTypes) => {
     userId: {
       type: DataTypes.BIGINT,
       allowNull: false,
-      defaultValue: 0,
     },
     token: {
       type: DataTypes.TEXT,
       allowNull: false,
-      defaultValue: '',
     },
   }, {
     paranoid: true,
@@ -38,9 +36,9 @@ module.exports = (sequelize, DataTypes) => {
       await Session.destroy({ where: { userId: id }, transaction })
 
       const session = await Session.create({
-          userId: id,
-          token: randomString(20),
-        }, { transaction })
+        userId: id,
+        token: randomString(20),
+      }, { transaction })
 
       await transaction.commit()
 

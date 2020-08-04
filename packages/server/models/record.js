@@ -7,14 +7,18 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       autoIncrement: true,
     },
-    type: {
-      type: DataTypes.TEXT,
-      defaultValue: 'expense',
+    userId: {
+      type: DataTypes.BIGINT,
       allowNull: false,
     },
     categoryId: {
       type: DataTypes.BIGINT,
       allowNull: true,
+    },
+    type: {
+      type: DataTypes.TEXT,
+      defaultValue: 'expense',
+      allowNull: false,
     },
     amount: {
       type: DataTypes.DECIMAL(12, 2),

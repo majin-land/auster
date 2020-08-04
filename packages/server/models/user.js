@@ -1,5 +1,7 @@
 const moment = require('moment')
 
+const { deletedEmail } = require('../utils/helper')
+
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define('User', {
     id: {
@@ -34,6 +36,11 @@ module.exports = (sequelize, DataTypes) => {
         return moment(this.getDataValue('updatedAt')).format()
       },
     },
+    hooks: {
+      beforeDestroy: async (instance, options) => {
+        await instance.update({ email: deletedEmail(instance.email) }, options)
+      },
+    },
   })
 
   User.validatePassword = (email, password) => {
@@ -46,7 +53,8 @@ module.exports = (sequelize, DataTypes) => {
   }
 
   User.prototype.display = function () {
-    return this.get({ plain: true })
+    const { deletedAt, password, ...user } = this.get({ plain: true })
+    return user
   }
 
   return User

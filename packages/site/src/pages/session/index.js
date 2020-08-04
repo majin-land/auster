@@ -1,14 +1,16 @@
-import React, { useState }  from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState } from 'react'
+import { Link, useHistory } from 'react-router-dom'
 import { makeStyles } from '@material-ui/core/styles'
-
 import {
   Button,
   FormControl,
   TextField,
 } from '@material-ui/core'
 
-import { useStores } from '~/src/hooks'
+import { useRequest } from '~/src/hooks'
+import { useGlobalState, saveState } from '~/src/state'
+import { login, session } from '~/src/services'
+import { setApiAuth } from '~/src/services/api'
 
 import styles from './styles'
 
@@ -16,21 +18,23 @@ const useStyles = makeStyles(styles)
 
 const Login = () => {
   const classes = useStyles()
-
-  const { sessionStore, routing } = useStores()
+  const history = useHistory()
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
-  const handleSubmit = async () => {
-    try {
-      await sessionStore.login({ email, password })
-      if (!sessionStore.user) return
+  const { isLoading, error, request } = useRequest(login)
+  const [, setAccessToken] = useGlobalState('accessToken')
+  const [, setUser] = useGlobalState('user')
 
-      routing.push('/')
-    } catch (err) {
-      console.log(err)
-    }
+  const handleSubmit = async () => {
+    const { data: { accessToken } } = await request({ email, password })
+    setApiAuth(accessToken)
+    setAccessToken(accessToken)
+    const { data: user } = await session()
+    setUser(user)
+    saveState()
+    history.replace('/')
   }
 
   return (
@@ -68,12 +72,14 @@ const Login = () => {
               />
             </FormControl>
             <div>
+              {error && <div>{error.message}</div>}
               <Button
                 variant="contained"
                 size="large"
                 fullWidth
                 color="primary"
                 onClick={handleSubmit}
+                disabled={isLoading}
               >
                 Login
               </Button>

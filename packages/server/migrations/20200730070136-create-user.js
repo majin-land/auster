@@ -20,9 +20,6 @@ module.exports = {
         password: {
           type: Sequelize.TEXT,
           allowNull: false,
-          set(password) {
-            this.setDataValue('password', sequelize.fn('crypt', password, sequelize.fn('gen_salt', 'md5')))
-          },
         },
         created_at: {
           type: Sequelize.DATE,

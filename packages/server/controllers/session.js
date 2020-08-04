@@ -3,32 +3,30 @@ const router = require('express').Router()
 const { User, Session } = require('../models')
 
 router.get('/', async (req, res) => {
-  const auth = req.get('Authorization')
+  const token = req.get('Authorization')
   if (
-    typeof auth === 'undefined' ||
-    !auth
+    typeof token === 'undefined' ||
+    !token
   ) throw new Error('Unauthorized access')
 
-  const session = await Session.findOne({ where: { token: auth } })
+  const session = await Session.findOne({ where: { token } })
   if (!session) throw new Error('Unauthorized access')
 
-  const user = await User.findByPk(session.userId)
-
-  if (!user) throw new Error('Invalid email or password')
+  const user = await User.findOne({ where: { id: session.userId } })
+  if (!user) throw new Error('User not found')
 
   res.json(user.display())
 })
 
-router.post('/login', async (req, res) => {
+router.post('/', async (req, res) => {
   const { email, password } = req.body
 
   const user = await User.validatePassword(email, password)
-
   if (!user) throw new Error('Invalid email or password')
 
   const accessToken = await Session.generateAccess(user.id)
 
-  return res.json({ accessToken, user: user.display() })
+  res.json({ accessToken })
 })
 
 router.post('/register', async (req, res, next) => {
@@ -53,11 +51,25 @@ router.post('/register', async (req, res, next) => {
       password,
     })
 
-    res.json(user.display())
+    const accessToken = await Session.generateAccess(user.id)
+
+    res.json({ accessToken })
   } catch (e) {
     console.error('ERROR in registering new user', e)
     next(e)
   }
+})
+
+router.delete('/', async (req, res) => {
+  const token = req.get('Authorization')
+  if (
+    typeof token === 'undefined' ||
+    !token
+  ) throw new Error('000401')
+
+  await Session.destroy({ where: { token } })
+
+  res.json({ status: 'done' })
 })
 
 module.exports = router

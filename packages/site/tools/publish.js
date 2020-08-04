@@ -3,7 +3,7 @@ const s3 = require('s3-node-client')
 
 const { TARGET } = process.env
 
-const deployConfig = require('./deploy-config')
+const deployConfig = require('./deploy-config.js')
 
 const configTarget = deployConfig[TARGET]
 

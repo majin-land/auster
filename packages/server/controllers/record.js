@@ -4,6 +4,9 @@ const { Record, Category } = require('../models')
 
 router.get('/', async (req, res) => {
   const result = await Record.findAndCountAll({
+    where: {
+      userId: req.currentUser.id,
+    },
     include: [
       {
         model: Category,
@@ -20,7 +23,10 @@ router.get('/', async (req, res) => {
 })
 
 router.get('/:id', async (req, res) => {
-  const where = { id: req.params.id }
+  const where = {
+    id: req.params.id,
+    userId: req.currentUser.id,
+  }
 
   const record = await Record.findOne({
     where,
@@ -46,13 +52,17 @@ router.post('/', async (req, res) => {
     categoryId,
     amount,
     transactionDate,
+    userId: req.currentUser.id,
   })
 
   res.json(record.display())
 })
 
 router.put('/:id', async (req, res) => {
-  const where = { id: req.params.id }
+  const where = {
+    id: req.params.id,
+    userId: req.currentUser.id,
+  }
 
   const record = await Record.findOne({ where })
   record.type = req.body.type
@@ -66,7 +76,10 @@ router.put('/:id', async (req, res) => {
 })
 
 router.delete('/:id', async (req, res) => {
-  const where = { id: req.params.id }
+  const where = {
+    id: req.params.id,
+    userId: req.currentUser.id,
+  }
 
   const record = await Record.findOne({ where })
 

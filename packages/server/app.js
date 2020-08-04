@@ -10,6 +10,7 @@ const frameguard = require('frameguard')
 const requestIp = require('request-ip')
 const useragent = require('express-useragent')
 
+const { auth } = require('./middlewares/auth')
 const exception = require('./utils/exception')
 
 const routes = requireDir('./controllers', { recurse: true })
@@ -45,10 +46,10 @@ app.get('/', (req, res) => {
 })
 
 app.use('/public', routes.public)
-app.use('/record', routes.record)
-app.use('/category', routes.category)
-app.use('/user', routes.user)
 app.use('/session', routes.session)
+app.use('/category', routes.category)
+app.use('/record', auth, routes.record)
+app.use('/user', auth, routes.user)
 
 app.use((err, req, res, next) => {
   if (err) {
