@@ -26,6 +26,7 @@ const LogoutButton = () => {
     <Button
       onClick={doLogout}
       disabled={isLoading}
+      variant="outlined"
     >
       Logout
     </Button>
