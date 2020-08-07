@@ -19,7 +19,6 @@ import {
   Tab,
   AppBar,
   Divider,
-  Icons,
 } from '@material-ui/core'
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos'
 import Lens from '@material-ui/icons/Lens'
@@ -47,18 +46,11 @@ const Record = () => {
   const renderCurrentBalance = () => {
     return (
       <div className={classes.currentBalance}>
-        <div style={{
-            fontWeight: 'bold'
-          }}
-        >
+        <div className={classes.title}>
           Current Balance
         </div>
-        <div
-        >
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-          }}>
+        <div>
+          <div className={classes.currentBalanceInfo}>
             <div>
               Inflow
             </div>
@@ -66,10 +58,7 @@ const Record = () => {
               10.000.000
             </div>
           </div>
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-          }}>
+          <div className={classes.currentBalanceInfo}>
             <div>
               Outflow
             </div>
@@ -77,10 +66,7 @@ const Record = () => {
               -3.600.000
             </div>
           </div>
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-          }}>
+          <div className={classes.currentBalanceInfo}>
             <div>
               Cash
             </div>
@@ -96,6 +82,9 @@ const Record = () => {
   const renderTransactionForm = () => {
     return (
       <div>
+        <div className={classes.title}>
+          Add Transaction
+        </div>
         <form>
           <FormControl fullWidth style={{ marginBottom: '1rem' }}>
             <TextField
@@ -156,12 +145,7 @@ const Record = () => {
               InputLabelProps={{ shrink: true }}
             />
           </FormControl>
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'flex-end'
-            }}
-          >
+          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
             <Button
               variant="contained"
               size="large"
@@ -244,10 +228,7 @@ const Record = () => {
   const renderTransactionHistory = () => {
     return (
       <div>
-        <div style={{
-            fontWeight: 'bold',
-            marginBottom: '0.5rem',
-          }}>
+        <div className={classes.title}>
           Transaction History
         </div>
         <div>
@@ -269,34 +250,14 @@ const Record = () => {
                 29 July 2020
               </div>
               <Divider />
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                }}
-              >
+              <div className={classes.transactionDetail}>
                 <Lens/>
-                <div
-                  style={{
-                    flex: 1
-                  }}
-                >
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      fontSize: '1rem',
-                    }}
-                  >
+                <div style={{ flex: 1 }}>
+                  <div className={classes.transactionRecord}>
                     <span>Electricity</span>
                     <span>Rp 3.000.000</span>
                   </div>
-                  <div
-                    style={{
-                      fontSize: '0.8rem'
-                    }}
-                  >
+                  <div className={classes.transactionNote}>
                     ini adalah note untuk outcome
                   </div>
                 </div>
@@ -309,34 +270,14 @@ const Record = () => {
                 29 Agustus 2020
               </div>
               <Divider />
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                }}
-              >
+              <div className={classes.transactionDetail}>
                 <Lens/>
-                <div
-                  style={{
-                    flex: 1
-                  }}
-                >
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      fontSize: '1rem',
-                    }}
-                  >
+                <div style={{ flex: 1 }}>
+                  <div className={classes.transactionRecord}>
                     <span>Electricity</span>
                     <span>Rp 3.000.000</span>
                   </div>
-                  <div
-                    style={{
-                      fontSize: '0.8rem'
-                    }}
-                  >
+                  <div className={classes.transactionNote}>
                     ini adalah note untuk outcome
                   </div>
                 </div>
@@ -349,34 +290,14 @@ const Record = () => {
                 1 September 2020
               </div>
               <Divider />
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                }}
-              >
+              <div className={classes.transactionDetail}>
                 <Lens/>
-                <div
-                  style={{
-                    flex: 1
-                  }}
-                >
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      fontSize: '1rem',
-                    }}
-                  >
+                <div style={{ flex: 1 }}>
+                  <div className={classes.transactionRecord}>
                     <span>Electricity</span>
                     <span>Rp 3.000.000</span>
                   </div>
-                  <div
-                    style={{
-                      fontSize: '0.8rem'
-                    }}
-                  >
+                  <div className={classes.transactionNote}>
                     ini adalah note untuk outcome
                   </div>
                 </div>
@@ -389,48 +310,17 @@ const Record = () => {
   }
 
   return (
-    <div style={{
-        display: 'flex',
-        justifyContent: 'center',
-      }}
-    >
+    <div style={{ display: 'flex', justifyContent: 'center' }}>
       <div className={classes.container}>
-        <div
-          style={{
-            display: 'flex',
-            flex: '1',
-            justifyContent: 'flex-end',
-            marginBottom: '0.5rem'
-          }}
-        >
+        <div className={classes.header}>
           <LogoutButton />
         </div>
-        <div style={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-          }}
-        >
-          <div style={{
-            flex: 1,
-            marginRight: '0.5rem',
-          }}>
+        <div className={classes.content}>
+          <div className={classes.leftContent}>
             {renderCurrentBalance()}
             {renderTransactionHistory()}
           </div>
-          <div style={{
-            flex: 1,
-            border: '1px black solid',
-            padding: '0.5rem',
-            borderRadius: '5px',
-          }}>
-            <div style={{
-                  fontWeight: 'bold',
-                  marginBottom: '0.5rem',
-              }}
-            >
-              Add Transaction
-            </div>
+          <div className={classes.rightContent}>
             {renderTransactionForm()}
           </div>
         </div>
