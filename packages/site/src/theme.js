@@ -19,13 +19,24 @@ const breakpoints = {
 
 // Our color options
 const color = {
-  primary: '#00b7b2',
-  secondary: '#223442',
-  error: '#EA4B35',
-  textPrimary: '#324452',
+  red: '#E4627B',
+  green: '#CEFF7D',
+  brown: '#FACA6C',
+  purple: '#9784E8',
+  cyan: '#70FFE9',
   transparent: 'rgba(0, 0, 0, 0)',
   opaque: 'rgba(255, 255, 255, 0.94)',
 }
+
+// https://material.io/resources/color
+color.primary = color.purple
+color.primaryLight = '#cab4ff'
+color.primaryDark = '#6557b5'
+color.secondary = color.brown
+color.secondaryLight = '#fffd9c'
+color.secondaryDark = '#c4993d'
+color.error = color.red
+color.textPrimary = '#324452'
 
 // Material UI default color palettes
 const palette = {
@@ -73,11 +84,14 @@ const props = {
   MuiSwitch: {
     color: 'primary',
   },
+  MuiLink: {
+    color: 'primary',
+    underline: 'none',
+  },
 }
 
 // Material UI style overrides
 const overrides = {
-
 }
 
 export default {

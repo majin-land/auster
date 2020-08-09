@@ -24,6 +24,7 @@
     "core-js": "^3.6.5",
     "date-fns": "^2.15.0",
     "dotenv": "^8.2.0",
+    "eventemitter3": "^4.0.4",
     "history": "^4.9.0",
     "moment": "^2.27.0",
     "prop-types": "^15.7.2",

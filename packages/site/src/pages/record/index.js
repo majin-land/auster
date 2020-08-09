@@ -1,7 +1,9 @@
 import React, { useState } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import moment from 'moment'
-
+import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos'
+import Lens from '@material-ui/icons/Lens'
+import { KeyboardDatePicker } from '@material-ui/pickers'
 import {
   TextField,
   InputAdornment,
@@ -20,13 +22,10 @@ import {
   AppBar,
   Divider,
 } from '@material-ui/core'
-import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos'
-import Lens from '@material-ui/icons/Lens'
-import { KeyboardDatePicker } from '@material-ui/pickers'
+
+import LogoutButton from 'site/components/logout'
 
 import TabPanel from './tabpanel'
-import LogoutButton from '~/src/components/logout'
-
 
 import styles from './styles'
 
@@ -105,7 +104,7 @@ const Record = () => {
               variant="outlined"
               value={category}
               InputProps={{
-                endAdornment:
+                endAdornment: (
                   <InputAdornment position="end">
                     <IconButton
                       onClick={() => setOpen(true)}
@@ -113,6 +112,7 @@ const Record = () => {
                       <ArrowForwardIosIcon />
                     </IconButton>
                   </InputAdornment>
+                ),
               }}
             />
           </FormControl>
@@ -161,30 +161,6 @@ const Record = () => {
     )
   }
 
-  const categoryDialog = () => {
-    return (
-      <Dialog
-        open={open}
-        onClose={() => setOpen(false)}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">Select Category</DialogTitle>
-        <DialogContent>
-          {renderCategoryTabPanel()}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpen(false)} color="primary">
-            CANCEL
-          </Button>
-          <Button onClick={() => setOpen(false)} color="primary" autoFocus>
-            OK
-          </Button>
-        </DialogActions>
-      </Dialog>
-    )
-  }
-
   const a11yProps = (index) => {
     return {
       id: `simple-tab-${index}`,
@@ -225,6 +201,30 @@ const Record = () => {
     )
   }
 
+  const renderCategoryDialog = () => {
+    return (
+      <Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">Select Category</DialogTitle>
+        <DialogContent>
+          {renderCategoryTabPanel()}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpen(false)} color="primary">
+            CANCEL
+          </Button>
+          <Button onClick={() => setOpen(false)} color="primary" autoFocus>
+            OK
+          </Button>
+        </DialogActions>
+      </Dialog>
+    )
+  }
+
   const renderTransactionHistory = () => {
     return (
       <div>
@@ -251,7 +251,7 @@ const Record = () => {
               </div>
               <Divider />
               <div className={classes.transactionDetail}>
-                <Lens/>
+                <Lens />
                 <div style={{ flex: 1 }}>
                   <div className={classes.transactionRecord}>
                     <span>Electricity</span>
@@ -271,7 +271,7 @@ const Record = () => {
               </div>
               <Divider />
               <div className={classes.transactionDetail}>
-                <Lens/>
+                <Lens />
                 <div style={{ flex: 1 }}>
                   <div className={classes.transactionRecord}>
                     <span>Electricity</span>
@@ -291,7 +291,7 @@ const Record = () => {
               </div>
               <Divider />
               <div className={classes.transactionDetail}>
-                <Lens/>
+                <Lens />
                 <div style={{ flex: 1 }}>
                   <div className={classes.transactionRecord}>
                     <span>Electricity</span>
@@ -324,7 +324,7 @@ const Record = () => {
             {renderTransactionForm()}
           </div>
         </div>
-        {categoryDialog()}
+        {renderCategoryDialog()}
       </div>
     </div>
   )

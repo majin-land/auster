@@ -1,28 +1,29 @@
-export default (theme) => ({
+export default () => ({
   wrapper: {
     display: 'flex',
+    flexDirection: 'column',
     justifyContent: 'center',
+    alignItems: 'center',
     height: '100vh',
-    padding: '10rem',
+  },
+  header: {
+    marginBottom: '1rem',
+    fontSize: '4rem',
+    letterSpacing: '0.1rem',
+    textAlign: 'center',
   },
   formContainer: {
-    width: '30rem',
+    width: '100%',
+    maxWidth: '30rem',
     padding: '2rem',
-  },
-  textAndLogo: {
     display: 'flex',
+    flexDirection: 'column',
     justifyContent: 'center',
   },
-  textStyle: {
-    fontSize: '2rem',
+  formField: {
+    marginBottom: '1rem',
   },
-  textLink: {
-    textDecoration: 'none',
-    color: theme.color.primary,
-    marginLeft: '5px',
-  },
-  textCenter: {
-    display: 'flex',
-    justifyContent: 'center',
+  actionButton: {
+    marginTop: '1rem',
   },
 })

@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 
+import errorHandler from 'site/services/error-handler'
+import { useGlobalState } from 'site/state'
+
 // https://reactjs.org/docs/hooks-faq.html#how-to-get-the-previous-props-or-state
 export const usePrevious = (value) => {
   const ref = useRef()
@@ -15,16 +18,27 @@ export const useRequest = (api) => {
   const [error, setError] = useState(null)
   const [response, setResponse] = useState(null)
 
+  const [errors, setErrors] = useGlobalState('errors')
+
   const request = (params) => {
     setLoading(true)
     setError(false)
 
     return api(params)
       .then((data) => {
-        setResponse(data)
-        return data
+        if (data.ok) {
+          setResponse(data)
+          return data
+        }
+        throw errorHandler(data)
       })
-      .catch((e) => setError(e))
+      .catch((e) => {
+        setError(e)
+        setErrors([
+          ...errors,
+          e,
+        ])
+      })
       .finally(() => setLoading(false))
   }
 
