@@ -58,8 +58,7 @@ const config = {
   resolve: {
     symlinks: false,
     alias: {
-      // 'react-dom': '@hot-loader/react-dom',
-      '~': path.resolve(__dirname, '../'),
+      site: path.resolve(__dirname, '../src'),
     },
   },
 

@@ -1,16 +1,22 @@
 import React, { useState } from 'react'
-import { Link, useHistory } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 import { makeStyles } from '@material-ui/core/styles'
 import {
   Button,
   FormControl,
   TextField,
+  Typography,
+  Card,
+  CardContent,
+  CardActions,
 } from '@material-ui/core'
 
-import { useRequest } from '~/src/hooks'
-import { useGlobalState, saveState } from '~/src/state'
-import { login, session } from '~/src/services'
-import { setApiAuth } from '~/src/services/api'
+import { useRequest } from 'site/hooks'
+import { useGlobalState, saveState } from 'site/state'
+import { login, fetchCurrentUser } from 'site/services'
+import { setApiAuth } from 'site/services/api'
+
+import Link from 'site/components/link'
 
 import styles from './styles'
 
@@ -23,15 +29,20 @@ const Login = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
-  const { isLoading, error, request } = useRequest(login)
+  const { isLoading, request } = useRequest(login)
   const [, setAccessToken] = useGlobalState('accessToken')
   const [, setUser] = useGlobalState('user')
 
   const handleSubmit = async () => {
-    const { data: { accessToken } } = await request({ email, password })
+    const response = await request({ email, password })
+    if (!response) return
+    const { data: { accessToken } } = response
     setApiAuth(accessToken)
     setAccessToken(accessToken)
-    const { data: user } = await session()
+
+    const responseUser = await fetchCurrentUser()
+    if (!responseUser) return
+    const { data: user } = responseUser
     setUser(user)
     saveState()
     history.replace('/')
@@ -39,19 +50,20 @@ const Login = () => {
 
   return (
     <div className={classes.wrapper}>
-      <div className={classes.formContainer}>
-        <div className={classes.textAndLogo}>
-          <div className={classes.textStyle}>
+      <Card className={classes.formContainer}>
+        <CardContent>
+          <Typography
+            variant="h1"
+            className={classes.header}
+          >
             AUSTER
-          </div>
-        </div>
-        <div>
-          <form>
-            <FormControl fullWidth style={{ marginBottom: '1rem' }}>
+          </Typography>
+          <form onSubmit={handleSubmit}>
+            <FormControl fullWidth className={classes.formField}>
               <TextField
                 autoFocus
                 fullWidth
-                label="email"
+                label="Email"
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
                 type="text"
@@ -59,11 +71,11 @@ const Login = () => {
                 required
               />
             </FormControl>
-            <FormControl fullWidth style={{ marginBottom: '1rem' }}>
+            <FormControl fullWidth className={classes.formField}>
               <TextField
                 fullWidth
                 autoComplete="current-password"
-                label="password"
+                label="Password"
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
                 type="password"
@@ -71,28 +83,29 @@ const Login = () => {
                 required
               />
             </FormControl>
-            <div>
-              {error && <div>{error.message}</div>}
-              <Button
-                variant="contained"
-                size="large"
-                fullWidth
-                color="primary"
-                onClick={handleSubmit}
-                disabled={isLoading}
-              >
-                Login
-              </Button>
-            </div>
-            <div className={classes.textCenter}>
-              Don't have an account?
-              <Link className={classes.textLink} to="/register">
-                Sign up
-              </Link>
-            </div>
+            <Button
+              fullWidth
+              className={classes.actionButton}
+              type="submit"
+              color="primary"
+              variant="contained"
+              size="large"
+              disabled={isLoading}
+              onClick={handleSubmit}
+            >
+              Login
+            </Button>
           </form>
-        </div>
-      </div>
+        </CardContent>
+        <CardActions style={{ justifyContent: 'center' }}>
+          <Typography>
+            Don't have an account?
+          </Typography>
+          <Link to="/register">
+            Sign up
+          </Link>
+        </CardActions>
+      </Card>
     </div>
   )
 }

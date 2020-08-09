@@ -47,7 +47,7 @@ module.exports = {
   settings: {
     'import/resolver': {
       alias: [
-        ['~', path.resolve(__dirname)],
+        ['site', path.resolve(__dirname, './src')],
       ],
     },
   },
