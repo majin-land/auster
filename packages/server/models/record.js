@@ -38,6 +38,10 @@ Record.init({
     type: DataTypes.DATE,
     allowNull: false,
   },
+  note: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
 }, {
   sequelize: db,
   tableName: 'Record',
