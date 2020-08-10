@@ -1,31 +1,39 @@
 const moment = require('moment')
+const { Model, DataTypes } = require('sequelize')
 
-module.exports = (sequelize, DataTypes) => {
-  const Category = sequelize.define('Category', {
-    id: {
-      type: DataTypes.BIGINT,
-      primaryKey: true,
-      autoIncrement: true,
-    },
-    name: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-    },
-  }, {
-    paranoid: true,
-    getterMethods: {
-      createdAt() {
-        return moment(this.getDataValue('createdAt')).format()
-      },
-      updatedAt() {
-        return moment(this.getDataValue('updatedAt')).format()
-      },
-    },
-  })
+const { db } = require('./db')
 
-  Category.prototype.display = function () {
+class Category extends Model {
+  display() {
     return this.get({ plain: true })
   }
-
-  return Category
 }
+
+Category.init({
+  id: {
+    type: DataTypes.BIGINT,
+    primaryKey: true,
+    autoIncrement: true,
+  },
+  name: {
+    type: DataTypes.TEXT,
+    allowNull: false,
+  },
+  parentId: {
+    type: DataTypes.BIGINT,
+    allowNull: true,
+  },
+}, {
+  sequelize: db,
+  tableName: 'Category',
+  getterMethods: {
+    created_at() {
+      return moment(this.getDataValue('created_at')).format()
+    },
+    updated_at() {
+      return moment(this.getDataValue('updated_at')).format()
+    },
+  },
+})
+
+module.exports = Category

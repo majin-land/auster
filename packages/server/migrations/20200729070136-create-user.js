@@ -3,9 +3,10 @@ module.exports = {
     .then(async () => {
       await queryInterface.createTable('User', {
         id: {
-          type: Sequelize.BIGINT,
+          type: Sequelize.UUID,
+          allowNull: false,
           primaryKey: true,
-          autoIncrement: true,
+          defaultValue: Sequelize.UUIDV4,
         },
         name: {
           type: Sequelize.TEXT,

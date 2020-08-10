@@ -11,6 +11,10 @@ module.exports = {
           type: Sequelize.TEXT,
           allowNull: false,
         },
+        parent_id: {
+          type: Sequelize.BIGINT,
+          allowNull: true,
+        },
         created_at: {
           type: Sequelize.DATE,
           defaultValue: Sequelize.NOW,
@@ -20,11 +24,6 @@ module.exports = {
           type: Sequelize.DATE,
           defaultValue: Sequelize.NOW,
           allowNull: false,
-        },
-        deleted_at: {
-          type: Sequelize.DATE,
-          defaultValue: Sequelize.NOW,
-          allowNull: true,
         },
       })
     }),
