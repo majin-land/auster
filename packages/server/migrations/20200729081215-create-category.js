@@ -11,6 +11,11 @@ module.exports = {
           type: Sequelize.TEXT,
           allowNull: false,
         },
+        type: {
+          type: Sequelize.TEXT,
+          defaultValue: 'expense',
+          allowNull: false,
+        },
         parent_id: {
           type: Sequelize.BIGINT,
           allowNull: true,
