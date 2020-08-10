@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import moment from 'moment'
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos'
-import Lens from '@material-ui/icons/Lens'
+import { Lens, Check } from '@material-ui/icons'
 import { KeyboardDatePicker } from '@material-ui/pickers'
 import {
   TextField,
@@ -21,7 +21,11 @@ import {
   Tab,
   AppBar,
   Divider,
+  Typography,
 } from '@material-ui/core'
+
+import { useRequest } from 'site/hooks'
+import { fetchCategory } from 'site/services'
 
 import LogoutButton from 'site/components/logout'
 
@@ -35,12 +39,39 @@ const Record = () => {
   const classes = useStyles()
 
   const [open, setOpen] = useState(false)
-  const [amount, setAmount] = useState(0)
-  const [category, setCategory] = useState(null)
-  const [transactionDate, setTransactionDate] = useState(moment())
-  const [note, setNote] = useState('')
+  const [categoryList, setCategoryList] = useState([])
+  const [record, setRecord] = useState({
+    amount: 0,
+    category: null,
+    transactionDate: moment(),
+    note: '',
+  })
+  const [recordList, setRecordList] = useState([])
   const [categoryTabIndex, setCategoryTabIndex] = useState(0)
   const [transactionTabIndex, setTransactionTabIndex] = useState(1)
+
+  const fetchData = async () => {
+    const dataCategory = await fetchCategory()
+    const { list } = dataCategory.data
+    const categoryTree = list.reduce((arr, item) => {
+        if (item.parentId && item.parentId !== '0') {
+          const category = list.find(cat => String(cat.id) === String(item.parentId))
+          if (category) {
+            if (!category.children) category.children = []
+            category.children.push(item)
+          }
+        } else {
+          arr.push(item)
+        }
+        return arr
+      }, [])
+
+    setCategoryList(categoryTree)
+  }
+
+  useEffect(() => {
+    fetchData()
+  }, [])
 
   const renderCurrentBalance = () => {
     return (
@@ -88,8 +119,8 @@ const Record = () => {
           <FormControl fullWidth style={{ marginBottom: '1rem' }}>
             <TextField
               label="Amount"
-              value={amount}
-              onChange={(event) => setAmount(event.target.value)}
+              value={record.amount}
+              onChange={(event) => setRecord({ ...record, amount: event.target.value })}
               type="text"
               name="amount"
               required
@@ -102,7 +133,7 @@ const Record = () => {
               type="text"
               disabled
               variant="outlined"
-              value={category}
+              value={record.category || ''}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
@@ -124,8 +155,8 @@ const Record = () => {
               format="MM/dd/yyyy"
               variant="inline"
               inputVariant="filled"
-              value={transactionDate}
-              onChange={(date) => setTransactionDate(date)}
+              value={record.transactionDate}
+              onChange={(date) => setRecord({ ...record, transactionDate: date })}
               KeyboardButtonProps={{
                 'aria-label': 'change date',
               }}
@@ -134,8 +165,8 @@ const Record = () => {
           <FormControl fullWidth style={{ marginBottom: '1rem' }}>
             <TextField
               fullWidth
-              value={note}
-              onChange={(event) => setNote(event.target.value)}
+              value={record.note}
+              onChange={(event) => setRecord({ ...record, note: event.target.value })}
               label="Note"
               multiline
               rows="4"
@@ -178,24 +209,28 @@ const Record = () => {
           </Tabs>
         </AppBar>
         <TabPanel value={categoryTabIndex} index={0}>
-          <FormControl component="fieldset">
-            <RadioGroup aria-label="expense" name="expense" value={category} onChange={(event, newValue) => setCategory(newValue)}>
-              <FormControlLabel value="Electricity" control={<Radio />} label="Electricity" />
-              <FormControlLabel value="Gas" control={<Radio />} label="Gas" />
-              <FormControlLabel value="Internet" control={<Radio />} label="Internet" />
-              <FormControlLabel value="Phone" control={<Radio />} label="Phone" />
-            </RadioGroup>
-          </FormControl>
+          {categoryList.map((index, category) => {
+            if (category.type === "expense") {
+              <div key={index} style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                <Typography>
+                  {category.name}
+                </Typography>
+                <Check style={{ color: '#6557b5' }}/>
+              </div>
+            }
+          })}
         </TabPanel>
         <TabPanel value={categoryTabIndex} index={1}>
-          <FormControl component="fieldset">
-            <RadioGroup aria-label="income" name="income" value={category} onChange={(event, newValue) => setCategory(newValue)}>
-              <FormControlLabel value="Sallary" control={<Radio />} label="Sallary" />
-              <FormControlLabel value="Gift" control={<Radio />} label="Gift" />
-              <FormControlLabel value="Award" control={<Radio />} label="Award" />
-              <FormControlLabel value="Selling" control={<Radio />} label="Selling" />
-            </RadioGroup>
-          </FormControl>
+          {categoryList.map((index, category) => {
+            if (category.type === "income") {
+              <div key={index} style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                <Typography>
+                  {category.name}
+                </Typography>
+                <Check style={{ color: '#6557b5' }}/>
+              </div>
+            }
+          })}
         </TabPanel>
       </div>
     )
@@ -311,6 +346,7 @@ const Record = () => {
 
   return (
     <div style={{ display: 'flex', justifyContent: 'center' }}>
+      {console.log(categoryList)}
       <div className={classes.container}>
         <div className={classes.header}>
           <LogoutButton />
