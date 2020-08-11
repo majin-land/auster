@@ -44,6 +44,7 @@ const Record = () => {
   const [record, setRecord] = useState({
     amount: 0,
     category: null,
+    categoryName: '',
     transactionDate: moment(),
     note: '',
   })
@@ -143,7 +144,7 @@ const Record = () => {
               type="text"
               disabled
               variant="outlined"
-              value={record.category || ''}
+              value={record.categoryName}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
@@ -209,6 +210,14 @@ const Record = () => {
     }
   }
 
+  const selectCategory = (id, name) => {
+    if (id === record.category) {
+      setRecord({ ...record, category: null, categoryName: '' })
+    } else {
+      setRecord({ ...record, category: id, categoryName: name })
+    }
+  }
+
   const renderCategoryTabPanel = () => {
     return (
       <div>
@@ -224,21 +233,21 @@ const Record = () => {
               if (category.type === "expense") {
                 return (
                   <div key={category.id}>
-                    <div  className={classes.listCategory}>
+                    <div  className={classes.listCategory} onClick={() => selectCategory(category.id, category.name)}>
                       <Typography>
                         {category.name}
                       </Typography>
-                      <Check style={{ color: '#6557b5' }}/>
+                      {category.id === record.category && <Check className={classes.checkIcon}/>}
                     </div>
                     <div>
                       {category.children &&
                         category.children.map((data) => {
                           return (
-                            <div key={data.id} className={classes.listCategoryChildren}>
+                            <div key={data.id} className={classes.listCategoryChildren} onClick={() => selectCategory(data.id, data.name)}>
                               <Typography>
                                 {data.name}
                               </Typography>
-                              <Check style={{ color: '#6557b5' }}/>
+                              {data.id === record.category && <Check className={classes.checkIcon}/>}
                             </div>
                           )
                         })
@@ -257,21 +266,21 @@ const Record = () => {
             if (category.type === "income") {
               return (
                 <div key={category.id}>
-                  <div className={classes.listCategory}>
+                  <div className={classes.listCategory} onClick={() => selectCategory(category.id, category.name)}>
                     <Typography>
                       {category.name}
                     </Typography>
-                    <Check style={{ color: '#6557b5' }}/>
+                    {category.id === record.category && <Check className={classes.checkIcon}/>}
                   </div>
                   <div>
                     {category.children &&
                       category.children.map((data) => {
                         return (
-                          <div key={data.id} className={classes.listCategoryChildren}>
+                          <div key={data.id} className={classes.listCategoryChildren} onClick={() => selectCategory(data.id, data.name)}>
                             <Typography>
                               {data.name}
                             </Typography>
-                            <Check style={{ color: '#6557b5' }}/>
+                            {data.id === record.category && <Check className={classes.checkIcon}/>}
                           </div>
                         )
                       })
@@ -407,6 +416,7 @@ const Record = () => {
 
   return (
     <div style={{ display: 'flex', justifyContent: 'center' }}>
+      {console.log(categoryList)}
       <div className={classes.container}>
         <div className={classes.header}>
           <Button aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>

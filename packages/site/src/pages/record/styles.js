@@ -59,11 +59,16 @@ export default (theme) => ({
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
+    cursor: 'pointer',
   },
   listCategoryChildren: {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginLeft: '1rem',
+    cursor: 'pointer',
+  },
+  checkIcon: {
+    color: '#6557b5',
   },
 })
