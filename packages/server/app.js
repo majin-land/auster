@@ -18,7 +18,7 @@ const routes = requireDir('./controllers', { recurse: true })
 const app = express()
 
 // get PORT from .env file info
-const port = process.env.PORT || '4010' // default to 4010 if port info not set
+const port = process.env.SERVER_PORT || '4010' // default to 4010 if port info not set
 const isProduction = process.env.NODE_ENV === 'production'
 
 app.use(cors())
