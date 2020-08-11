@@ -45,14 +45,15 @@ router.get('/:id', async (req, res) => {
 })
 
 router.post('/', async (req, res) => {
-  const { type, categoryId, amount, transactionDate } = req.body
+  const { type, category, amount, transactionDate, note } = req.body
 
   const record = await Record.create({
+    userId: req.currentUser.id,
+    categoryId: category,
     type,
-    categoryId,
     amount,
     transactionDate,
-    userId: req.currentUser.id,
+    note,
   })
 
   res.json(record.display())

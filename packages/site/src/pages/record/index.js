@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useHistory } from 'react-router-dom'
 import { makeStyles } from '@material-ui/core/styles'
 import moment from 'moment'
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos'
@@ -23,8 +24,9 @@ import {
   MenuItem,
 } from '@material-ui/core'
 
+import { useRequest } from 'site/hooks'
 import { useGlobalState } from 'site/state'
-import { fetchCategory } from 'site/services'
+import { fetchCategory, addRecord } from 'site/services'
 
 import LogoutButton from 'site/components/logout'
 
@@ -36,12 +38,15 @@ const useStyles = makeStyles(styles)
 
 const Record = () => {
   const classes = useStyles()
+  const history = useHistory()
 
+  const { isLoading, request: submitRecord } = useRequest(addRecord)
   const [user, ] = useGlobalState('user')
 
   const [open, setOpen] = useState(false)
   const [categoryList, setCategoryList] = useState([])
   const [record, setRecord] = useState({
+    type: 'expense',
     amount: 0,
     category: null,
     categoryName: '',
@@ -51,7 +56,14 @@ const Record = () => {
   const [recordList, setRecordList] = useState([])
   const [categoryTabIndex, setCategoryTabIndex] = useState(0)
   const [transactionTabIndex, setTransactionTabIndex] = useState(1)
-  const [anchorEl, setAnchorEl] = React.useState(null)
+  const [anchorEl, setAnchorEl] = useState(null)
+
+  const handleSubmit = async (record) => {
+    const response = await submitRecord(record)
+    if (response) {
+      history.replace('/')
+    }
+  }
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget)
@@ -192,7 +204,7 @@ const Record = () => {
               variant="contained"
               size="large"
               color="primary"
-              onClick={() => {}}
+              onClick={() => handleSubmit(record)}
               style={{ color: 'white', fontWeight: 'bold' }}
             >
               Tambah
@@ -210,9 +222,9 @@ const Record = () => {
     }
   }
 
-  const selectCategory = (id, name) => {
+  const selectCategory = (id, name, type) => {
     if (id === record.category) {
-      setRecord({ ...record, category: null, categoryName: '' })
+      setRecord({ ...record, type, category: null, categoryName: '' })
     } else {
       setRecord({ ...record, category: id, categoryName: name })
     }
@@ -233,7 +245,7 @@ const Record = () => {
               if (category.type === "expense") {
                 return (
                   <div key={category.id}>
-                    <div  className={classes.listCategory} onClick={() => selectCategory(category.id, category.name)}>
+                    <div  className={classes.listCategory} onClick={() => selectCategory(category.id, category.name, 'expense')}>
                       <Typography>
                         {category.name}
                       </Typography>
@@ -243,7 +255,7 @@ const Record = () => {
                       {category.children &&
                         category.children.map((data) => {
                           return (
-                            <div key={data.id} className={classes.listCategoryChildren} onClick={() => selectCategory(data.id, data.name)}>
+                            <div key={data.id} className={classes.listCategoryChildren} onClick={() => selectCategory(data.id, data.name, 'expense')}>
                               <Typography>
                                 {data.name}
                               </Typography>
@@ -266,7 +278,7 @@ const Record = () => {
             if (category.type === "income") {
               return (
                 <div key={category.id}>
-                  <div className={classes.listCategory} onClick={() => selectCategory(category.id, category.name)}>
+                  <div className={classes.listCategory} onClick={() => selectCategory(category.id, category.name, 'income')}>
                     <Typography>
                       {category.name}
                     </Typography>
@@ -276,7 +288,7 @@ const Record = () => {
                     {category.children &&
                       category.children.map((data) => {
                         return (
-                          <div key={data.id} className={classes.listCategoryChildren} onClick={() => selectCategory(data.id, data.name)}>
+                          <div key={data.id} className={classes.listCategoryChildren} onClick={() => selectCategory(data.id, data.name, 'income')}>
                             <Typography>
                               {data.name}
                             </Typography>
@@ -416,11 +428,10 @@ const Record = () => {
 
   return (
     <div style={{ display: 'flex', justifyContent: 'center' }}>
-      {console.log(categoryList)}
       <div className={classes.container}>
         <div className={classes.header}>
           <Button aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
-            Hi, {user.name}
+            Hi, {user ? user.name : ''}
           </Button>
           <Menu
             id="simple-menu"
