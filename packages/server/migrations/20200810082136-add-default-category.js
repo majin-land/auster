@@ -51,7 +51,7 @@ module.exports = {
       updated_at: new Date(),
     }, {
       id: 8,
-      name: 'kebutuhan rumah',
+      name: 'Kebutuhan rumah',
       type: 'expense',
       parent_id: 4,
       created_at: new Date(),
