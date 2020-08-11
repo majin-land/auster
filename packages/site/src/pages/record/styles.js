@@ -52,4 +52,18 @@ export default (theme) => ({
   transactionNote: {
     fontSize: '0.8rem',
   },
+  wrapperCategory: {
+    maxHeight: '10rem',
+  },
+  listCategory: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  listCategoryChildren: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginLeft: '1rem',
+  },
 })

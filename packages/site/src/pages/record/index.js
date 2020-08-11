@@ -14,17 +14,16 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  FormControlLabel,
-  RadioGroup,
-  Radio,
   Tabs,
   Tab,
   AppBar,
   Divider,
   Typography,
+  Menu,
+  MenuItem,
 } from '@material-ui/core'
 
-import { useRequest } from 'site/hooks'
+import { useGlobalState } from 'site/state'
 import { fetchCategory } from 'site/services'
 
 import LogoutButton from 'site/components/logout'
@@ -38,6 +37,8 @@ const useStyles = makeStyles(styles)
 const Record = () => {
   const classes = useStyles()
 
+  const [user, ] = useGlobalState('user')
+
   const [open, setOpen] = useState(false)
   const [categoryList, setCategoryList] = useState([])
   const [record, setRecord] = useState({
@@ -49,6 +50,15 @@ const Record = () => {
   const [recordList, setRecordList] = useState([])
   const [categoryTabIndex, setCategoryTabIndex] = useState(0)
   const [transactionTabIndex, setTransactionTabIndex] = useState(1)
+  const [anchorEl, setAnchorEl] = React.useState(null)
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget)
+  }
+
+  const handleClose = () => {
+    setAnchorEl(null)
+  }
 
   const fetchData = async () => {
     const dataCategory = await fetchCategory()
@@ -73,16 +83,16 @@ const Record = () => {
     fetchData()
   }, [])
 
-  const renderCurrentBalance = () => {
+  const renderBalance = () => {
     return (
       <div className={classes.currentBalance}>
         <div className={classes.title}>
-          Current Balance
+          Saldo
         </div>
         <div>
           <div className={classes.currentBalanceInfo}>
             <div>
-              Inflow
+              Pemasukan
             </div>
             <div>
               10.000.000
@@ -90,7 +100,7 @@ const Record = () => {
           </div>
           <div className={classes.currentBalanceInfo}>
             <div>
-              Outflow
+              Pengeluaran
             </div>
             <div>
               -3.600.000
@@ -98,7 +108,7 @@ const Record = () => {
           </div>
           <div className={classes.currentBalanceInfo}>
             <div>
-              Cash
+              Total Saldo
             </div>
             <div>
               6.400.000
@@ -113,12 +123,12 @@ const Record = () => {
     return (
       <div>
         <div className={classes.title}>
-          Add Transaction
+          Tambah Transaksi
         </div>
         <form>
           <FormControl fullWidth style={{ marginBottom: '1rem' }}>
             <TextField
-              label="Amount"
+              label="Jumlah"
               value={record.amount}
               onChange={(event) => setRecord({ ...record, amount: event.target.value })}
               type="text"
@@ -129,7 +139,7 @@ const Record = () => {
           <FormControl fullWidth style={{ marginBottom: '1rem' }}>
             <TextField
               onClick={() => setOpen(true)}
-              placeholder="Select Category"
+              placeholder="Pilih Kategori"
               type="text"
               disabled
               variant="outlined"
@@ -167,7 +177,7 @@ const Record = () => {
               fullWidth
               value={record.note}
               onChange={(event) => setRecord({ ...record, note: event.target.value })}
-              label="Note"
+              label="Catatan"
               multiline
               rows="4"
               margin="normal"
@@ -184,7 +194,7 @@ const Record = () => {
               onClick={() => {}}
               style={{ color: 'white', fontWeight: 'bold' }}
             >
-              Add
+              Tambah
             </Button>
           </div>
         </form>
@@ -209,28 +219,70 @@ const Record = () => {
           </Tabs>
         </AppBar>
         <TabPanel value={categoryTabIndex} index={0}>
-          {categoryList.map((index, category) => {
-            if (category.type === "expense") {
-              <div key={index} style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                <Typography>
-                  {category.name}
-                </Typography>
-                <Check style={{ color: '#6557b5' }}/>
-              </div>
-            }
-          })}
+          <div className={classes.wrapperCategory}>
+            {categoryList.map((category) => {
+              if (category.type === "expense") {
+                return (
+                  <div key={category.id}>
+                    <div  className={classes.listCategory}>
+                      <Typography>
+                        {category.name}
+                      </Typography>
+                      <Check style={{ color: '#6557b5' }}/>
+                    </div>
+                    <div>
+                      {category.children &&
+                        category.children.map((data) => {
+                          return (
+                            <div key={data.id} className={classes.listCategoryChildren}>
+                              <Typography>
+                                {data.name}
+                              </Typography>
+                              <Check style={{ color: '#6557b5' }}/>
+                            </div>
+                          )
+                        })
+                      }
+                    </div>
+                    <Divider/>
+                  </div>
+                )
+              }
+            })}
+          </div>
         </TabPanel>
         <TabPanel value={categoryTabIndex} index={1}>
-          {categoryList.map((index, category) => {
+        <div className={classes.wrapperCategory}>
+          {categoryList.map((category) => {
             if (category.type === "income") {
-              <div key={index} style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-                <Typography>
-                  {category.name}
-                </Typography>
-                <Check style={{ color: '#6557b5' }}/>
-              </div>
+              return (
+                <div key={category.id}>
+                  <div className={classes.listCategory}>
+                    <Typography>
+                      {category.name}
+                    </Typography>
+                    <Check style={{ color: '#6557b5' }}/>
+                  </div>
+                  <div>
+                    {category.children &&
+                      category.children.map((data) => {
+                        return (
+                          <div key={data.id} className={classes.listCategoryChildren}>
+                            <Typography>
+                              {data.name}
+                            </Typography>
+                            <Check style={{ color: '#6557b5' }}/>
+                          </div>
+                        )
+                      })
+                    }
+                  </div>
+                  <Divider/>
+                </div>
+              )
             }
           })}
+        </div>
         </TabPanel>
       </div>
     )
@@ -264,7 +316,7 @@ const Record = () => {
     return (
       <div>
         <div className={classes.title}>
-          Transaction History
+          Riwayat Transaksi
         </div>
         <div>
           <AppBar position="static" color="default">
@@ -274,26 +326,29 @@ const Record = () => {
               onChange={(event, newIndex) => setTransactionTabIndex(newIndex)}
               aria-label="simple tabs example"
             >
-              <Tab label="LAST MONTH" {...a11yProps(0)} />
-              <Tab label="THIS MONTH" {...a11yProps(1)} />
-              <Tab label="FUTURE" {...a11yProps(2)} />
+              <Tab label="BULAN LALU" {...a11yProps(0)} />
+              <Tab label="BULAN INI" {...a11yProps(1)} />
+              <Tab label="BULAN DEPAN" {...a11yProps(2)} />
             </Tabs>
           </AppBar>
           <TabPanel value={transactionTabIndex} index={0}>
             <div>
+              {renderBalance()}
               <div>
-                29 July 2020
-              </div>
-              <Divider />
-              <div className={classes.transactionDetail}>
-                <Lens />
-                <div style={{ flex: 1 }}>
-                  <div className={classes.transactionRecord}>
-                    <span>Electricity</span>
-                    <span>Rp 3.000.000</span>
-                  </div>
-                  <div className={classes.transactionNote}>
-                    ini adalah note untuk outcome
+                <div>
+                  29 July 2020
+                </div>
+                <Divider />
+                <div className={classes.transactionDetail}>
+                  <Lens />
+                  <div style={{ flex: 1 }}>
+                    <div className={classes.transactionRecord}>
+                      <span>Electricity</span>
+                      <span>Rp 3.000.000</span>
+                    </div>
+                    <div className={classes.transactionNote}>
+                      ini adalah note untuk outcome
+                    </div>
                   </div>
                 </div>
               </div>
@@ -301,19 +356,22 @@ const Record = () => {
           </TabPanel>
           <TabPanel value={transactionTabIndex} index={1}>
             <div>
+              {renderBalance()}
               <div>
-                29 Agustus 2020
-              </div>
-              <Divider />
-              <div className={classes.transactionDetail}>
-                <Lens />
-                <div style={{ flex: 1 }}>
-                  <div className={classes.transactionRecord}>
-                    <span>Electricity</span>
-                    <span>Rp 3.000.000</span>
-                  </div>
-                  <div className={classes.transactionNote}>
-                    ini adalah note untuk outcome
+                <div>
+                  29 Agustus 2020
+                </div>
+                <Divider />
+                <div className={classes.transactionDetail}>
+                  <Lens />
+                  <div style={{ flex: 1 }}>
+                    <div className={classes.transactionRecord}>
+                      <span>Electricity</span>
+                      <span>Rp 3.000.000</span>
+                    </div>
+                    <div className={classes.transactionNote}>
+                      ini adalah note untuk outcome
+                    </div>
                   </div>
                 </div>
               </div>
@@ -321,19 +379,22 @@ const Record = () => {
           </TabPanel>
           <TabPanel value={transactionTabIndex} index={2}>
             <div>
+              {renderBalance()}
               <div>
-                1 September 2020
-              </div>
-              <Divider />
-              <div className={classes.transactionDetail}>
-                <Lens />
-                <div style={{ flex: 1 }}>
-                  <div className={classes.transactionRecord}>
-                    <span>Electricity</span>
-                    <span>Rp 3.000.000</span>
-                  </div>
-                  <div className={classes.transactionNote}>
-                    ini adalah note untuk outcome
+                <div>
+                  29 September 2020
+                </div>
+                <Divider />
+                <div className={classes.transactionDetail}>
+                  <Lens />
+                  <div style={{ flex: 1 }}>
+                    <div className={classes.transactionRecord}>
+                      <span>Electricity</span>
+                      <span>Rp 3.000.000</span>
+                    </div>
+                    <div className={classes.transactionNote}>
+                      ini adalah note untuk outcome
+                    </div>
                   </div>
                 </div>
               </div>
@@ -346,14 +407,25 @@ const Record = () => {
 
   return (
     <div style={{ display: 'flex', justifyContent: 'center' }}>
-      {console.log(categoryList)}
       <div className={classes.container}>
         <div className={classes.header}>
-          <LogoutButton />
+          <Button aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
+            Hi, {user.name}
+          </Button>
+          <Menu
+            id="simple-menu"
+            anchorEl={anchorEl}
+            keepMounted
+            open={Boolean(anchorEl)}
+            onClose={handleClose}
+          >
+            <MenuItem>
+              <LogoutButton />
+            </MenuItem>
+          </Menu>
         </div>
         <div className={classes.content}>
           <div className={classes.leftContent}>
-            {renderCurrentBalance()}
             {renderTransactionHistory()}
           </div>
           <div className={classes.rightContent}>
