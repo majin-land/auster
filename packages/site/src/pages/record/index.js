@@ -95,7 +95,6 @@ const Record = () => {
   const fetchRecordData = async (startDate, endDate) => {
     const response = await fetchRecord({ startDate, endDate })
     setRecordList(response.data)
-    console.log(response.data)
   }
 
   useEffect(() => {
