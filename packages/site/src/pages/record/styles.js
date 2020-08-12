@@ -34,7 +34,7 @@ export default (theme) => ({
     },
   },
   leftContent: {
-    flex: 1,
+    flex: 2,
     marginRight: '0.5rem',
   },
   rightContent: {
@@ -55,6 +55,7 @@ export default (theme) => ({
   },
   transactionNote: {
     fontSize: '0.8rem',
+    marginLeft: '1.8rem',
   },
   wrapperCategory: {
     maxHeight: '10rem',

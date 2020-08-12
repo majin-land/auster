@@ -48,7 +48,7 @@ app.get('/', (req, res) => {
 app.use('/public', routes.public)
 app.use('/session', routes.session)
 app.use('/category', routes.category)
-app.use('/record', routes.record)
+app.use('/record', auth, routes.record)
 app.use('/user', auth, routes.user)
 
 app.use((err, req, res, next) => {
