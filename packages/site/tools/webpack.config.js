@@ -3,9 +3,9 @@ const { TARGET } = process.env
 const ENV = process.env.NODE_ENV || 'development'
 const isDebug = ENV !== 'production'
 
-let dotEnvPath = './.env'
+let dotEnvPath = '../../.env'
 if (TARGET === 'prod') {
-  dotEnvPath = './.env.production'
+  dotEnvPath = '../../.env.production'
 }
 require('dotenv').config({ path: dotEnvPath })
 
@@ -25,7 +25,7 @@ const babelConfig = require('../babel.config.js')
 
 const analyze = process.argv.includes('analyze') || false
 
-const PORT = process.env.PORT || 3000
+const PORT = process.env.CLIENT_PORT || 3000
 
 // Webpack configuration (index.js => dist/main.{hash}.js)
 // http://webpack.github.io/docs/configuration.html
