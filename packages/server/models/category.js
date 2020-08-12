@@ -41,4 +41,8 @@ Category.init({
   },
 })
 
+Category.associate = function (models) {
+  Category.hasOne(models.Record, { as: 'record' })
+}
+
 module.exports = Category

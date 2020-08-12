@@ -28,6 +28,10 @@ export default (theme) => ({
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
+
+    [theme.breakpoints.down('xs')]: {
+      flexDirection: 'column',
+    },
   },
   leftContent: {
     flex: 1,
@@ -70,5 +74,20 @@ export default (theme) => ({
   },
   checkIcon: {
     color: '#6557b5',
+  },
+  recordList: {
+    padding: '0.5rem',
+    cursor: 'pointer',
+    '&:hover': {
+      backgroundColor: '#F0F0F0',
+    },
+  },
+  selectedRecord: {
+    backgroundColor: '#F0F0F0',
+  },
+  deleteButton: {
+    backgroundColor: theme.color.red,
+    fontWeight: 'bold',
+    color: 'white',
   },
 })

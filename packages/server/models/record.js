@@ -56,7 +56,7 @@ Record.init({
 })
 
 Record.associate = function (models) {
-  Record.belongsTo(models.Category, { as: 'category' })
+  Record.belongsTo(models.Category, { as: 'category', foreignKey: 'categoryId' })
 }
 
 module.exports = Record

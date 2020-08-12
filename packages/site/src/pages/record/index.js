@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useHistory } from 'react-router-dom'
 import { makeStyles } from '@material-ui/core/styles'
+import classNames from 'classnames'
 import moment from 'moment'
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos'
 import { Lens, Check } from '@material-ui/icons'
@@ -26,7 +27,7 @@ import {
 
 import { useRequest } from 'site/hooks'
 import { useGlobalState } from 'site/state'
-import { fetchCategory, addRecord } from 'site/services'
+import { fetchCategory, addRecord, fetchRecord, deleteRecord, updateRecord } from 'site/services'
 
 import LogoutButton from 'site/components/logout'
 
@@ -46,6 +47,7 @@ const Record = () => {
   const [open, setOpen] = useState(false)
   const [categoryList, setCategoryList] = useState([])
   const [record, setRecord] = useState({
+    id: '',
     type: 'expense',
     amount: 0,
     category: null,
@@ -57,13 +59,8 @@ const Record = () => {
   const [categoryTabIndex, setCategoryTabIndex] = useState(0)
   const [transactionTabIndex, setTransactionTabIndex] = useState(1)
   const [anchorEl, setAnchorEl] = useState(null)
-
-  const handleSubmit = async (record) => {
-    const response = await submitRecord(record)
-    if (response) {
-      history.replace('/')
-    }
-  }
+  const [startDate, setStartDate] = useState(moment().format('YYYY-MM-DD'))
+  const [endDate, setendDate] = useState(moment().format('YYYY-MM-DD'))
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget)
@@ -92,8 +89,15 @@ const Record = () => {
     setCategoryList(categoryTree)
   }
 
+  const fetchRecordData = async (startDate, endDate) => {
+    const response = await fetchRecord({ startDate, endDate })
+    setRecordList(response.data.rows)
+    console.log(response)
+  }
+
   useEffect(() => {
     fetchData()
+    fetchRecordData(startDate, endDate)
   }, [])
 
   const renderBalance = () => {
@@ -132,11 +136,43 @@ const Record = () => {
     )
   }
 
+  const handleSubmit = async (record) => {
+    let response = null
+    if (record.id) {
+      response = await updateRecord(record)
+    } else {
+      response = await submitRecord(record)
+    }
+    if (response.ok) {
+      fetchRecordData(startDate, endDate)
+    }
+  }
+
+  const handleCancel = () => {
+    setRecord({
+      id: '',
+      type: 'expense',
+      amount: 0,
+      category: null,
+      categoryName: '',
+      transactionDate: moment(),
+      note: '',
+    })
+  }
+
+  const handleDelete = async (id) => {
+    const response = await deleteRecord(id)
+    if (response.ok) {
+      handleCancel()
+      fetchRecordData(startDate, endDate)
+    }
+  }
+
   const renderTransactionForm = () => {
     return (
       <div>
         <div className={classes.title}>
-          Tambah Transaksi
+          {record.id ? 'Detail Transaksi' : 'Tambah Transaksi'}
         </div>
         <form>
           <FormControl fullWidth style={{ marginBottom: '1rem' }}>
@@ -200,6 +236,27 @@ const Record = () => {
             />
           </FormControl>
           <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            {record.id &&
+              <Button
+                variant="contained"
+                size="large"
+                color="secondary"
+                onClick={() => handleCancel()}
+                style={{ color: 'white', fontWeight: 'bold' }}
+              >
+                Batal
+              </Button>
+            }
+            {record.id &&
+              <Button
+                variant="contained"
+                size="large"
+                onClick={() => handleDelete(record.id)}
+                className={classes.deleteButton}
+              >
+                Hapus
+              </Button>
+            }
             <Button
               variant="contained"
               size="large"
@@ -207,7 +264,7 @@ const Record = () => {
               onClick={() => handleSubmit(record)}
               style={{ color: 'white', fontWeight: 'bold' }}
             >
-              Tambah
+              {record.id ? 'Ubah' : 'Tambah'}
             </Button>
           </div>
         </form>
@@ -333,6 +390,18 @@ const Record = () => {
     )
   }
 
+  const selectRecord = (record) => {
+    setRecord({
+      id: record.id,
+      type: record.type,
+      amount: record.amount,
+      category: null,
+      categoryName: '',
+      transactionDate: record.transactionDate,
+      note: record.note,
+    })
+  }
+
   const renderTransactionHistory = () => {
     return (
       <div>
@@ -379,22 +448,33 @@ const Record = () => {
             <div>
               {renderBalance()}
               <div>
-                <div>
-                  29 Agustus 2020
-                </div>
-                <Divider />
-                <div className={classes.transactionDetail}>
-                  <Lens />
-                  <div style={{ flex: 1 }}>
-                    <div className={classes.transactionRecord}>
-                      <span>Electricity</span>
-                      <span>Rp 3.000.000</span>
+                {recordList.map((recordData) => {
+                  return (
+                    <div>
+                      <div>
+                        {moment(recordData.transactionDate).format('DD MMMM YYYY')}
+                      </div>
+                      <Divider />
+                      <div className={classNames(classes.recordList, {
+                                [classes.selectedRecord]: recordData.id === record.id,
+                              })
+                        } onClick={() => selectRecord(recordData)}>
+                        <div className={classes.transactionDetail}>
+                          <Lens />
+                          <div style={{ flex: 1 }}>
+                            <div className={classes.transactionRecord}>
+                              <span>{recordData.categoryId}</span>
+                              <span>{recordData.amount}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className={classes.transactionNote}>
+                          {recordData.note}
+                        </div>
+                      </div>
                     </div>
-                    <div className={classes.transactionNote}>
-                      ini adalah note untuk outcome
-                    </div>
-                  </div>
-                </div>
+                  )
+                })}
               </div>
             </div>
           </TabPanel>
