@@ -55,6 +55,6 @@ Record.init({
   },
 })
 
-Record.hasOne(db.models.Category, { as: 'category' })
+Record.belongsTo(db.models.Category, { as: 'category' })
 
 module.exports = Record

@@ -7,6 +7,7 @@ import { ENV } from 'site/config'
 import { useGlobalState } from 'site/state'
 import { RoutesNotLoggedIn, RoutesLoggedIn } from 'site/routes'
 import { fetchCurrentUser } from 'site/services'
+import { setApiAuth } from 'site/services/api'
 
 import NotificationBar from 'site/components/notification-bar'
 
@@ -21,7 +22,10 @@ const App = () => {
   const [init, setInit] = useState(!accessToken)
   const [error, setError] = useState(null)
 
-  if (accessToken) fetchCurrentUser().finally(() => { setInit(true) })
+  if (accessToken) {
+    setApiAuth(accessToken)
+    fetchCurrentUser().finally(() => { setInit(true) })
+  }
 
   useEffect(() => {
     if (errors.length === 0) return

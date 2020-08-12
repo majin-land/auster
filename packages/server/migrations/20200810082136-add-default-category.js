@@ -1,5 +1,5 @@
 module.exports = {
-  up: (queryInterface, Sequelize) => queryInterface.sequelize.transaction(async (transaction) => {
+  up: (queryInterface) => queryInterface.sequelize.transaction(async (transaction) => {
     await queryInterface.bulkInsert('Category', [{
       id: 1,
       name: 'Makanan & Minuman',
