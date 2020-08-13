@@ -156,7 +156,7 @@ module.exports = {
       updated_at: new Date(),
     }, {
       id: 23,
-      name: 'Olah raga',
+      name: 'Olahraga',
       type: 'expense',
       parent_id: 22,
       created_at: new Date(),
@@ -247,7 +247,7 @@ module.exports = {
       updated_at: new Date(),
     }, {
       id: 36,
-      name: 'Selainnya',
+      name: 'Lainnya',
       type: 'expense',
       parent_id: 0,
       created_at: new Date(),
