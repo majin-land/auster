@@ -13,45 +13,44 @@ router.get('/:startDate/:endDate', async (req, res) => {
       transactionDate: {
         [Op.lt]: endDate,
         [Op.gt]: startDate,
-      }
+      },
     },
     include: [
       {
         model: Category,
         as: 'category',
         required: false,
+        attributes: ['name'],
       },
-    ]
+    ],
+    order: [
+      ['transactionDate', 'DESC'],
+      ['id', 'DESC'],
+    ],
   })
 
-  const income = result
-    .filter(record => record.type === 'income')
+  const { income, expense } = result
     .reduce((total, record) => {
-      return total + Number(record.amount)
-    }, 0)
+      if (record.type === 'expense') total.expense += Number(record.amount)
+      if (record.type === 'income') total.income += Number(record.amount)
+      return total
+    }, { income: 0, expense: 0 })
 
-  const expense = result
-    .filter(record => record.type === 'expense')
-    .reduce((total, record) => {
-      return total + Number(record.amount)
-    }, 0)
-
-  const data = result.reduce((acc, curr) => {
-    const key = moment(curr['transactionDate']).format('YYYY-MM-DD')
-
-    if (!acc[key]) {
-      acc[key] = []
+  const data = result.reduce((acc, record) => {
+    const key = moment(record.transactionDate).format('YYYY-MM-DD')
+    let group = acc.find(recordGroup => recordGroup.date === key)
+    if (!group) {
+      group = { date: key, records: [] }
+      acc.push(group)
     }
-
-    acc[key].push(curr)
-
+    group.records.push(record)
     return acc
-  }, {})
+  }, [])
 
   res.json({
     data,
     income,
-    expense
+    expense,
   })
 })
 

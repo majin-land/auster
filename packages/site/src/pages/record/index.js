@@ -3,7 +3,6 @@ import { makeStyles } from '@material-ui/core/styles'
 import classNames from 'classnames'
 import moment from 'moment'
 import {
-  Lens,
   Check,
   Search,
   ArrowDropDown,
@@ -12,13 +11,11 @@ import {
 import { KeyboardDatePicker } from '@material-ui/pickers'
 import {
   TextField,
-  InputAdornment,
   IconButton,
   Button,
   FormControl,
   Dialog,
-  DialogTitle,
-  DialogContent,
+  Paper,
   DialogActions,
   Tabs,
   Tab,
@@ -31,14 +28,15 @@ import {
   Select,
 } from '@material-ui/core'
 
+import { formatNumber } from 'site/utils/helper'
 import { useRequest } from 'site/hooks'
 import { useGlobalState } from 'site/state'
 import { fetchCategory, addRecord, fetchRecord, deleteRecord, updateRecord } from 'site/services'
 
 import LogoutButton from 'site/components/logout'
 import ConfirmDialog from 'site/components/confirm-dialog'
-
-import TabPanel from './tabpanel'
+import TabPanel from 'site/components/tab-panel'
+import NumberField from 'site/components/number-field'
 
 import styles from './styles'
 
@@ -55,25 +53,27 @@ for (let year = 2020; year <= MAX_YEAR; year++) {
   YEARS.push(year)
 }
 
+const DEFAULT_RECORD = {
+  id: '',
+  type: 'expense',
+  amount: '',
+  category: null,
+  categoryName: '',
+  transactionDate: moment(),
+  note: '',
+}
+
 const useStyles = makeStyles(styles)
 
 const Record = () => {
   const classes = useStyles()
 
-  const { isLoading, request: submitRecord } = useRequest(addRecord)
-  const [user, ] = useGlobalState('user')
+  const { request: submitRecord } = useRequest(addRecord)
+  const [user] = useGlobalState('user')
 
   const [open, setOpen] = useState(false)
   const [categoryList, setCategoryList] = useState([])
-  const [record, setRecord] = useState({
-    id: '',
-    type: 'expense',
-    amount: '',
-    category: null,
-    categoryName: '',
-    transactionDate: moment(),
-    note: '',
-  })
+  const [record, setRecord] = useState(DEFAULT_RECORD)
   const [recordList, setRecordList] = useState({})
   const [categoryTabIndex, setCategoryTabIndex] = useState(0)
   const [transactionTabIndex, setTransactionTabIndex] = useState(1)
@@ -96,23 +96,23 @@ const Record = () => {
     const dataCategory = await fetchCategory()
     const { list } = dataCategory.data
     const categoryTree = list.reduce((arr, item) => {
-        if (item.parentId && item.parentId !== '0') {
-          const category = list.find(cat => String(cat.id) === String(item.parentId))
-          if (category) {
-            if (!category.children) category.children = []
-            category.children.push(item)
-          }
-        } else {
-          arr.push(item)
+      if (item.parentId && item.parentId !== '0') {
+        const category = list.find(cat => String(cat.id) === String(item.parentId))
+        if (category) {
+          if (!category.children) category.children = []
+          category.children.push(item)
         }
-        return arr
-      }, [])
+      } else {
+        arr.push(item)
+      }
+      return arr
+    }, [])
 
     setCategoryList(categoryTree)
   }
 
-  const fetchRecordData = async (startDate, endDate) => {
-    const response = await fetchRecord({ startDate, endDate })
+  const fetchRecordData = async (start, end) => {
+    const response = await fetchRecord({ startDate: start, endDate: end })
     setRecordList(response.data)
   }
 
@@ -137,7 +137,7 @@ const Record = () => {
               Pemasukan
             </Typography>
             <Typography>
-              {recordList.income || 0}
+              {formatNumber(recordList.income || 0)}
             </Typography>
           </div>
           <div className={classes.currentBalanceInfo}>
@@ -145,7 +145,7 @@ const Record = () => {
               Pengeluaran
             </Typography>
             <Typography>
-              -{recordList.expense || 0}
+              -{formatNumber(recordList.expense || 0)}
             </Typography>
           </div>
           <div className={classes.currentBalanceInfo}>
@@ -153,7 +153,7 @@ const Record = () => {
               Total Saldo
             </Typography>
             <Typography>
-              {(recordList.income - recordList.expense) || 0}
+              {(formatNumber(recordList.income - recordList.expense) || 0)}
             </Typography>
           </div>
         </div>
@@ -161,29 +161,21 @@ const Record = () => {
     )
   }
 
-  const handleSubmit = async (record) => {
+  const handleCancel = () => {
+    setRecord(DEFAULT_RECORD)
+  }
+
+  const handleSubmit = async (recordData) => {
     let response = null
-    if (record.id) {
-      response = await updateRecord(record)
+    if (recordData.id) {
+      response = await updateRecord(recordData)
     } else {
-      response = await submitRecord(record)
+      response = await submitRecord(recordData)
     }
     if (response.ok) {
       fetchRecordData(startDate, endDate)
       handleCancel()
     }
-  }
-
-  const handleCancel = () => {
-    setRecord({
-      id: '',
-      type: 'expense',
-      amount: 0,
-      category: null,
-      categoryName: '',
-      transactionDate: moment(),
-      note: '',
-    })
   }
 
   const handleDelete = async (id) => {
@@ -209,57 +201,47 @@ const Record = () => {
 
   const renderTransactionForm = () => {
     return (
-      <div>
+      <Paper style={{ width: '280px', padding: '1rem', position: 'absolute' }}>
         <Typography className={classes.title}>
           {record.id ? 'Detail Transaksi' : 'Tambah Transaksi'}
         </Typography>
-        <form>
+        <form
+          onSubmit={(event) => {
+            event.preventDefault()
+            handleSubmit(record)
+          }}
+        >
           <FormControl fullWidth style={{ marginBottom: '1rem' }}>
             <TextField
               label="Jumlah"
-              value={Number(record.amount) || 0}
-              onChange={(event) => setRecord({ ...record, amount: Number(event.target.value)})}
+              value={record.amount}
+              onChange={(event) => setRecord({ ...record, amount: event.target.value })}
               type="text"
               name="amount"
-              required
-            />
-          </FormControl>
-          <FormControl fullWidth style={{ marginBottom: '1rem' }}>
-            <TextField
-              onClick={() => setOpen(true)}
-              placeholder="Pilih Kategori"
-              type="text"
-              disabled
-              variant="outlined"
-              value={record.categoryName}
+              autoFocus
               InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={() => setOpen(true)}
-                    >
-                      <ArrowForwardIos />
-                    </IconButton>
-                  </InputAdornment>
-                ),
+                inputComponent: NumberField,
               }}
             />
           </FormControl>
-          <FormControl fullWidth style={{ marginBottom: '1rem' }}>
-            <KeyboardDatePicker
-              margin="normal"
-              id="date-picker-dialog"
-              label="Date picker dialog"
-              format="MM/dd/yyyy"
-              variant="inline"
-              inputVariant="filled"
-              value={record.transactionDate}
-              onChange={(date) => setRecord({ ...record, transactionDate: date })}
-              KeyboardButtonProps={{
-                'aria-label': 'change date',
-              }}
-            />
-          </FormControl>
+          <div
+            onClick={() => setOpen(true)}
+            style={{ padding: '0.2rem 0 0.5rem', display: 'flex', justifyContent: 'space-between', cursor: 'pointer', borderBottom: '1px solid grey' }}
+          >
+            <Typography>
+              {record && record.categoryName ? record.categoryName : 'Pilih Kategori'}
+            </Typography>
+            <ArrowForwardIos />
+          </div>
+          <KeyboardDatePicker
+            autoOk // on select it will auto close the calendar
+            margin="normal"
+            label="Tanggal transaksi"
+            format="dd/MM/yyyy"
+            variant="inline"
+            value={record.transactionDate}
+            onChange={(date) => setRecord({ ...record, transactionDate: date })}
+          />
           <FormControl fullWidth style={{ marginBottom: '1rem' }}>
             <TextField
               fullWidth
@@ -274,19 +256,19 @@ const Record = () => {
               InputLabelProps={{ shrink: true }}
             />
           </FormControl>
-          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-            {record.id &&
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            {record.id && (
               <Button
                 variant="contained"
                 size="large"
                 color="secondary"
-                onClick={() => handleCancel()}
+                onClick={handleCancel}
                 style={{ color: 'white', fontWeight: 'bold' }}
               >
                 Batal
               </Button>
-            }
-            {record.id &&
+            )}
+            {record.id && (
               <Button
                 variant="contained"
                 size="large"
@@ -295,27 +277,20 @@ const Record = () => {
               >
                 Hapus
               </Button>
-            }
+            )}
             <Button
               variant="contained"
               size="large"
               color="primary"
-              onClick={() => handleSubmit(record)}
+              type="submit"
               style={{ color: 'white', fontWeight: 'bold' }}
             >
               {record.id ? 'Ubah' : 'Tambah'}
             </Button>
           </div>
         </form>
-      </div>
+      </Paper>
     )
-  }
-
-  const a11yProps = (index) => {
-    return {
-      id: `simple-tab-${index}`,
-      'aria-controls': `simple-tabpanel-${index}`,
-    }
   }
 
   const selectCategory = (id, name, type) => {
@@ -324,85 +299,7 @@ const Record = () => {
     } else {
       setRecord({ ...record, type, category: id, categoryName: name })
     }
-  }
-
-  const renderCategoryTabPanel = () => {
-    return (
-      <div>
-        <AppBar position="static">
-          <Tabs value={categoryTabIndex} onChange={(event, newIndex) => setCategoryTabIndex(newIndex)} aria-label="simple tabs example">
-            <Tab label="EXPENSE" {...a11yProps(0)} />
-            <Tab label="INCOME" {...a11yProps(1)} />
-          </Tabs>
-        </AppBar>
-        <TabPanel value={categoryTabIndex} index={0}>
-          <div className={classes.wrapperCategory}>
-            {categoryList.map((category) => {
-              if (category.type === "expense") {
-                return (
-                  <div key={category.id}>
-                    <div  className={classes.listCategory} onClick={() => selectCategory(category.id, category.name, 'expense')}>
-                      <Typography>
-                        {category.name}
-                      </Typography>
-                      {category.id === record.category && <Check className={classes.checkIcon}/>}
-                    </div>
-                    <div>
-                      {category.children &&
-                        category.children.map((data) => {
-                          return (
-                            <div key={data.id} className={classes.listCategoryChildren} onClick={() => selectCategory(data.id, data.name, 'expense')}>
-                              <Typography>
-                                {data.name}
-                              </Typography>
-                              {data.id === record.category && <Check className={classes.checkIcon}/>}
-                            </div>
-                          )
-                        })
-                      }
-                    </div>
-                    <Divider/>
-                  </div>
-                )
-              }
-            })}
-          </div>
-        </TabPanel>
-        <TabPanel value={categoryTabIndex} index={1}>
-        <div className={classes.wrapperCategory}>
-          {categoryList.map((category) => {
-            if (category.type === "income") {
-              return (
-                <div key={category.id}>
-                  <div className={classes.listCategory} onClick={() => selectCategory(category.id, category.name, 'income')}>
-                    <Typography>
-                      {category.name}
-                    </Typography>
-                    {category.id === record.category && <Check className={classes.checkIcon}/>}
-                  </div>
-                  <div>
-                    {category.children &&
-                      category.children.map((data) => {
-                        return (
-                          <div key={data.id} className={classes.listCategoryChildren} onClick={() => selectCategory(data.id, data.name, 'income')}>
-                            <Typography>
-                              {data.name}
-                            </Typography>
-                            {data.id === record.category && <Check className={classes.checkIcon}/>}
-                          </div>
-                        )
-                      })
-                    }
-                  </div>
-                  <Divider/>
-                </div>
-              )
-            }
-          })}
-        </div>
-        </TabPanel>
-      </div>
-    )
+    setOpen(false)
   }
 
   const renderCategoryDialog = () => {
@@ -410,18 +307,104 @@ const Record = () => {
       <Dialog
         open={open}
         onClose={() => setOpen(false)}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">Select Category</DialogTitle>
-        <DialogContent>
-          {renderCategoryTabPanel()}
-        </DialogContent>
+        <AppBar position="static">
+          <Tabs
+            value={categoryTabIndex}
+            onChange={(event, newIndex) => setCategoryTabIndex(newIndex)}
+          >
+            <Tab label="EXPENSE" />
+            <Tab label="INCOME" />
+          </Tabs>
+        </AppBar>
+        <Paper style={{ overflowY: 'auto' }}>
+          <TabPanel value={categoryTabIndex} index={0}>
+            {categoryList.map((category) => {
+              if (category.type !== 'expense') return null
+              return (
+                <div key={category.id}>
+                  <div
+                    className={classes.listCategory}
+                    onClick={() => selectCategory(category.id, category.name, 'expense')}
+                  >
+                    <Typography>
+                      {category.name}
+                    </Typography>
+                    {category.id === record.category && <Check className={classes.checkIcon} />}
+                  </div>
+                  <div>
+                    {category.children &&
+                      category.children.map((data) => {
+                        return (
+                          <div
+                            key={data.id}
+                            className={classes.listCategoryChildren}
+                            onClick={() => selectCategory(data.id, data.name, 'expense')}
+                          >
+                            <Typography>
+                              {data.name}
+                            </Typography>
+                            {data.id === record.category && <Check className={classes.checkIcon} />}
+                          </div>
+                        )
+                      })}
+                  </div>
+                  <Divider />
+                </div>
+              )
+            })}
+          </TabPanel>
+          <TabPanel value={categoryTabIndex} index={1}>
+            {categoryList.map((category) => {
+              if (category.type !== 'income') return null
+              return (
+                <div key={category.id}>
+                  <div
+                    className={classes.listCategory}
+                    onClick={() => selectCategory(category.id, category.name, 'income')}
+                  >
+                    <Typography>
+                      {category.name}
+                    </Typography>
+                    {category.id === record.category && <Check className={classes.checkIcon} />}
+                  </div>
+                  <div>
+                    {category.children &&
+                    category.children.map((data) => {
+                      return (
+                        <div
+                          key={data.id}
+                          className={classes.listCategoryChildren}
+                          onClick={() => selectCategory(data.id, data.name, 'income')}
+                        >
+                          <Typography>
+                            {data.name}
+                          </Typography>
+                          {data.id === record.category && <Check className={classes.checkIcon} />}
+                        </div>
+                      )
+                    })}
+                  </div>
+                  <Divider />
+                </div>
+              )
+            })}
+          </TabPanel>
+        </Paper>
         <DialogActions>
-          <Button onClick={() => setOpen(false)} color="primary">
+          <Button
+            variant="text"
+            color="primary"
+            onClick={() => setOpen(false)}
+          >
             CANCEL
           </Button>
-          <Button onClick={() => setOpen(false)} color="primary" autoFocus>
+          <Button
+            autoFocus
+            variant="contained"
+            color="primary"
+            onClick={() => setOpen(false)}
+          >
             OK
           </Button>
         </DialogActions>
@@ -429,15 +412,15 @@ const Record = () => {
     )
   }
 
-  const selectRecord = (record) => {
+  const selectRecord = (selectedRecord) => {
     setRecord({
-      id: record.id,
-      type: record.type,
-      amount: record.amount,
-      category: record.category.id,
-      categoryName: record.category.name,
-      transactionDate: record.transactionDate,
-      note: record.note,
+      id: selectedRecord.id,
+      type: selectedRecord.type,
+      amount: selectedRecord.amount,
+      category: selectedRecord.category.id,
+      categoryName: selectedRecord.category.name,
+      transactionDate: selectedRecord.transactionDate,
+      note: selectedRecord.note,
     })
   }
 
@@ -460,50 +443,43 @@ const Record = () => {
     setEndDate(moment([year, month]).endOf('month').format('YYYY-MM-DD'))
   }
 
+  const isCurrentMonth = TODAY.format('YYYY-MM') === moment(startDate).format('YYYY-MM')
+
   const thisMonth = () => {
-    if (TODAY.format('YYYY-MM') === moment(startDate).format('YYYY-MM')) {
-      return 'BULAN INI'
-    } else {
-      return moment(startDate).format('MMM YYYY')
-    }
+    if (isCurrentMonth) return 'BULAN INI'
+    return moment(startDate).format('MMM YYYY')
   }
 
   const lastMonth = () => {
-    if (TODAY.format('YYYY-MM') === moment(startDate).format('YYYY-MM')) {
-      return 'BULAN LALU'
-    } else {
-      return moment(startDate).subtract(1, 'months').format('MMM YYYY')
-    }
+    if (isCurrentMonth) return 'BULAN LALU'
+    return moment(startDate).subtract(1, 'months').format('MMM YYYY')
   }
 
   const future = () => {
-    if (TODAY.format('YYYY-MM') === moment(startDate).format('YYYY-MM')) {
-      return 'BULAN LALU'
-    } else {
-      return moment(startDate).add(1, 'months').format('MMM YYYY')
-    }
+    if (isCurrentMonth) return 'BULAN DEPAN'
+    return moment(startDate).add(1, 'months').format('MMM YYYY')
   }
 
   const renderTransactionHistory = () => {
     return (
-      <div>
+      <div className={classes.transactionHistoryContainer}>
         <div className={classes.title}>
           <div style={{
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
           >
             <Typography>
               Riwayat Transaksi
             </Typography>
             <div>
               <FormControl style={{ width: '7.5rem', height: '2rem', marginRight: '1rem' }}>
-                <InputLabel id="demo-simple-select-label">Bulan</InputLabel>
+                <InputLabel>
+                  Bulan
+                </InputLabel>
                 <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
                   onChange={(event) => setMonth(event.target.value)}
                   value={month}
                 >
@@ -515,10 +491,10 @@ const Record = () => {
                 </Select>
               </FormControl>
               <FormControl style={{ width: '5rem' }}>
-                <InputLabel id="demo-simple-select-label">Tahun</InputLabel>
+                <InputLabel>
+                  Tahun
+                </InputLabel>
                 <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
                   onChange={(event) => setYear(event.target.value)}
                   value={year}
                 >
@@ -529,68 +505,72 @@ const Record = () => {
                   ))}
                 </Select>
               </FormControl>
-              <IconButton onClick={() => handleSearch()} color="primary" aria-label="search">
+              <IconButton
+                onClick={handleSearch}
+                color="primary"
+                aria-label="search"
+              >
                 <Search />
               </IconButton>
             </div>
           </div>
         </div>
         <div>
-          <AppBar position="static" color="default">
+          <AppBar position="static" color="transparent">
             <Tabs
               value={transactionTabIndex}
               variant="fullWidth"
               onChange={(event, newIndex) => changeTransactionTab(newIndex)}
-              aria-label="simple tabs example"
             >
-              <Tab label={lastMonth()} {...a11yProps(0)} />
-              <Tab label={thisMonth()} {...a11yProps(1)} />
-              <Tab label={future()} {...a11yProps(2)} />
+              <Tab label={lastMonth()} />
+              <Tab label={thisMonth()} />
+              <Tab label={future()} />
             </Tabs>
           </AppBar>
-          <TabPanel value={transactionTabIndex} index={1}>
+          <TabPanel
+            index={1}
+            value={transactionTabIndex}
+          >
             <div>
               {renderBalance()}
               <div>
-                {recordList.data && Object.keys(recordList.data).map((key) => {
-                    return (
-                      <div key={key}>
-                        <div>
-                          {moment(key).format('DD MMMM YYYY')}
-                        </div>
-                        <Divider />
-                        {recordList.data[key].map((recordData) => {
-                          return (
-                            <div
-                              key={recordData.id}
-                              className={classNames(classes.recordList, {
-                                [classes.selectedRecord]: recordData.id === record.id,
-                              })}
-                              onClick={() => selectRecord(recordData)}
-                            >
-                              <div className={classes.transactionDetail}>
-                                <Lens />
-                                <div style={{ flex: 1 }}>
-                                  <div className={classes.transactionRecord}>
-                                    <Typography>
-                                      {recordData.category.name}
-                                    </Typography>
-                                    <Typography>
-                                      {recordData.type === 'expense' ? '-' + Number(recordData.amount) : Number(recordData.amount)}
-                                    </Typography>
-                                  </div>
+                {recordList.data && recordList.data.map((group) => {
+                  return (
+                    <div key={group.date}>
+                      <div>
+                        {moment(group.date).format('DD MMMM YYYY')}
+                      </div>
+                      <Divider />
+                      {group.records.map((recordData) => {
+                        return (
+                          <div
+                            key={recordData.id}
+                            className={classNames(classes.recordList, {
+                              [classes.selectedRecord]: recordData.id === record.id,
+                            })}
+                            onClick={() => selectRecord(recordData)}
+                          >
+                            <div className={classes.transactionDetail}>
+                              <div style={{ flex: 1 }}>
+                                <div className={classes.transactionRecord}>
+                                  <Typography>
+                                    {recordData.category.name}
+                                  </Typography>
+                                  <Typography>
+                                    {recordData.type === 'expense' ? `-${formatNumber(recordData.amount)}` : formatNumber(recordData.amount)}
+                                  </Typography>
                                 </div>
                               </div>
-                              <Typography className={classes.transactionNote}>
-                                {recordData.note}
-                              </Typography>
                             </div>
-                          )
-                        })}
-                      </div>
-                    )
-                  })
-                }
+                            <Typography className={classes.transactionNote}>
+                              {recordData.note}
+                            </Typography>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  )
+                })}
               </div>
             </div>
           </TabPanel>
@@ -600,35 +580,29 @@ const Record = () => {
   }
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center' }}>
-      <div className={classes.container}>
-        <div className={classes.header}>
-          <Button aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
-            Hi, {user ? user.name : ''} <ArrowDropDown />
-          </Button>
-          <Menu
-            id="simple-menu"
-            anchorEl={anchorEl}
-            keepMounted
-            open={Boolean(anchorEl)}
-            onClose={handleClose}
-          >
-            <MenuItem>
-              <LogoutButton />
-            </MenuItem>
-          </Menu>
-        </div>
-        <div className={classes.content}>
-          <div className={classes.leftContent}>
-            {renderTransactionHistory()}
-          </div>
-          <div className={classes.rightContent}>
-            {renderTransactionForm()}
-          </div>
-        </div>
-        {renderCategoryDialog()}
-        {renderDeleteDialog()}
+    <div className={classes.container}>
+      <div className={classes.header}>
+        <Button aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
+          Hi, {user ? user.name : ''} <ArrowDropDown />
+        </Button>
+        <Menu
+          id="simple-menu"
+          anchorEl={anchorEl}
+          keepMounted
+          open={Boolean(anchorEl)}
+          onClose={handleClose}
+        >
+          <MenuItem>
+            <LogoutButton />
+          </MenuItem>
+        </Menu>
       </div>
+      <div className={classes.content}>
+        {renderTransactionForm()}
+        {renderTransactionHistory()}
+      </div>
+      {renderCategoryDialog()}
+      {renderDeleteDialog()}
     </div>
   )
 }

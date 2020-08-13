@@ -1,6 +1,7 @@
 export default (theme) => ({
   container: {
     maxWidth: theme.global.maxContentWidth,
+    margin: 'auto',
     padding: '0.5rem',
   },
   currentBalance: {
@@ -26,22 +27,16 @@ export default (theme) => ({
   },
   content: {
     display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: 'column',
+  },
+  transactionHistoryContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    marginLeft: '300px',
 
     [theme.breakpoints.down('xs')]: {
-      flexDirection: 'column',
+      marginLeft: '0',
     },
-  },
-  leftContent: {
-    flex: 2,
-    marginRight: '0.5rem',
-  },
-  rightContent: {
-    flex: 1,
-    padding: '0.5rem',
-    border: '1px solid lightgrey',
-    borderRadius: '5px',
   },
   transactionDetail: {
     display: 'flex',

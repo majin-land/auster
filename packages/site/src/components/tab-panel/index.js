@@ -1,6 +1,8 @@
 import React from 'react'
-import Typography from '@material-ui/core/Typography'
-import Box from '@material-ui/core/Box'
+import {
+  Box,
+  Typography,
+} from '@material-ui/core'
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props
@@ -10,8 +12,6 @@ function TabPanel(props) {
       component="div"
       role="tabpanel"
       hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
       {...other}
     >
       {value === index && (

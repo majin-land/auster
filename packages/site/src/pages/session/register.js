@@ -34,7 +34,8 @@ const Register = () => {
   const [, setAccessToken] = useGlobalState('accessToken')
   const [, setUser] = useGlobalState('user')
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (event) => {
+    event.preventDefault()
     const response = await request({
       name,
       email,

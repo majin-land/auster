@@ -33,7 +33,8 @@ const Login = () => {
   const [, setAccessToken] = useGlobalState('accessToken')
   const [, setUser] = useGlobalState('user')
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (event) => {
+    event.preventDefault()
     const response = await request({ email, password })
     if (!response) return
     const { data: { accessToken } } = response
