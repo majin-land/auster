@@ -201,7 +201,7 @@ const Record = () => {
 
   const renderTransactionForm = () => {
     return (
-      <Paper style={{ width: '280px', padding: '1rem', position: 'absolute' }}>
+      <Paper style={{ width: '280px', padding: '1rem', position: 'fixed' }}>
         <Typography className={classes.title}>
           {record.id ? 'Detail Transaksi' : 'Tambah Transaksi'}
         </Typography>
