@@ -2,8 +2,13 @@ import React, { useState, useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import classNames from 'classnames'
 import moment from 'moment'
-import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos'
-import { Lens, Check, Search } from '@material-ui/icons'
+import {
+  Lens,
+  Check,
+  Search,
+  ArrowDropDown,
+  ArrowForwardIos,
+} from '@material-ui/icons'
 import { KeyboardDatePicker } from '@material-ui/pickers'
 import {
   TextField,
@@ -23,7 +28,7 @@ import {
   Menu,
   MenuItem,
   InputLabel,
-  Select
+  Select,
 } from '@material-ui/core'
 
 import { useRequest } from 'site/hooks'
@@ -31,10 +36,24 @@ import { useGlobalState } from 'site/state'
 import { fetchCategory, addRecord, fetchRecord, deleteRecord, updateRecord } from 'site/services'
 
 import LogoutButton from 'site/components/logout'
+import ConfirmDialog from 'site/components/confirm-dialog'
 
 import TabPanel from './tabpanel'
 
 import styles from './styles'
+
+const TODAY = moment()
+const MAX_YEAR = TODAY.year()
+const MONTHS = []
+const YEARS = []
+
+for (let month = 0; month < 12; month++) {
+  MONTHS.push({ key: month, label: moment().month(month).format('MMMM') })
+}
+
+for (let year = 2020; year <= MAX_YEAR; year++) {
+  YEARS.push(year)
+}
 
 const useStyles = makeStyles(styles)
 
@@ -49,7 +68,7 @@ const Record = () => {
   const [record, setRecord] = useState({
     id: '',
     type: 'expense',
-    amount: 0,
+    amount: '',
     category: null,
     categoryName: '',
     transactionDate: moment(),
@@ -61,9 +80,9 @@ const Record = () => {
   const [anchorEl, setAnchorEl] = useState(null)
   const [startDate, setStartDate] = useState(moment().startOf('month').format('YYYY-MM-DD'))
   const [endDate, setEndDate] = useState(moment().endOf('month').format('YYYY-MM-DD'))
-  const [month, setMonth] = useState(moment().subtract(1, 'months').format('M'))
-  const [year, setYear] = useState(moment().subtract(1, 'months').format('YYYY'))
-  const [confirmDialog, setConfirmDialog] = useState(false)
+  const [month, setMonth] = useState(moment(startDate).subtract(1, 'months').format('M'))
+  const [year, setYear] = useState(moment(endDate).format('YYYY'))
+  const [deleteConfirmDialog, setDeleteConfirmDialog] = useState(false)
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget)
@@ -109,33 +128,33 @@ const Record = () => {
   const renderBalance = () => {
     return (
       <div className={classes.currentBalance}>
-        <div className={classes.title}>
+        <Typography className={classes.title}>
           Saldo
-        </div>
+        </Typography>
         <div>
           <div className={classes.currentBalanceInfo}>
-            <div>
+            <Typography>
               Pemasukan
-            </div>
-            <div>
+            </Typography>
+            <Typography>
               {recordList.income || 0}
-            </div>
+            </Typography>
           </div>
           <div className={classes.currentBalanceInfo}>
-            <div>
+            <Typography>
               Pengeluaran
-            </div>
-            <div>
+            </Typography>
+            <Typography>
               -{recordList.expense || 0}
-            </div>
+            </Typography>
           </div>
           <div className={classes.currentBalanceInfo}>
-            <div>
+            <Typography>
               Total Saldo
-            </div>
-            <div>
+            </Typography>
+            <Typography>
               {(recordList.income - recordList.expense) || 0}
-            </div>
+            </Typography>
           </div>
         </div>
       </div>
@@ -171,22 +190,35 @@ const Record = () => {
     const response = await deleteRecord(id)
     if (response.ok) {
       handleCancel()
+      setDeleteConfirmDialog(false)
       fetchRecordData(startDate, endDate)
     }
+  }
+
+  const renderDeleteDialog = () => {
+    return (
+      <ConfirmDialog
+        open={deleteConfirmDialog}
+        title="Konfirmasi Hapus"
+        content="Hapus transaksi ini ?"
+        onClose={() => setDeleteConfirmDialog(false)}
+        onAccept={() => handleDelete(record.id)}
+      />
+    )
   }
 
   const renderTransactionForm = () => {
     return (
       <div>
-        <div className={classes.title}>
+        <Typography className={classes.title}>
           {record.id ? 'Detail Transaksi' : 'Tambah Transaksi'}
-        </div>
+        </Typography>
         <form>
           <FormControl fullWidth style={{ marginBottom: '1rem' }}>
             <TextField
               label="Jumlah"
-              value={Number(record.amount)}
-              onChange={(event) => setRecord({ ...record, amount: event.target.value })}
+              value={Number(record.amount) || 0}
+              onChange={(event) => setRecord({ ...record, amount: Number(event.target.value)})}
               type="text"
               name="amount"
               required
@@ -206,7 +238,7 @@ const Record = () => {
                     <IconButton
                       onClick={() => setOpen(true)}
                     >
-                      <ArrowForwardIosIcon />
+                      <ArrowForwardIos />
                     </IconButton>
                   </InputAdornment>
                 ),
@@ -258,7 +290,7 @@ const Record = () => {
               <Button
                 variant="contained"
                 size="large"
-                onClick={() => handleDelete(record.id)}
+                onClick={() => setDeleteConfirmDialog(true)}
                 className={classes.deleteButton}
               >
                 Hapus
@@ -411,16 +443,16 @@ const Record = () => {
 
   const changeTransactionTab = (newIndex) => {
     if (newIndex === 0) {
-      setStartDate(moment().subtract(1, 'months').startOf('month').format('YYYY-MM-DD'))
-      setEndDate(moment().subtract(1, 'months').endOf('month').format('YYYY-MM-DD'))
+      setStartDate(moment(startDate).subtract(1, 'months').startOf('month').format('YYYY-MM-DD'))
+      setEndDate(moment(endDate).subtract(1, 'months').endOf('month').format('YYYY-MM-DD'))
     } else if (newIndex === 1) {
       setStartDate(moment().startOf('month').format('YYYY-MM-DD'))
       setEndDate(moment().endOf('month').format('YYYY-MM-DD'))
     } else if (newIndex === 2) {
-      setStartDate(moment().add(1, 'months').format('YYYY-MM-DD'))
-      setEndDate(moment().add(1, 'months').format('YYYY-MM-DD'))
+      setStartDate(moment(startDate).add(1, 'months').format('YYYY-MM-DD'))
+      setEndDate(moment(endDate).add(1, 'months').format('YYYY-MM-DD'))
     }
-    setTransactionTabIndex(newIndex)
+    setTransactionTabIndex(1)
   }
 
   const handleSearch = () => {
@@ -428,11 +460,80 @@ const Record = () => {
     setEndDate(moment([year, month]).endOf('month').format('YYYY-MM-DD'))
   }
 
+  const thisMonth = () => {
+    if (TODAY.format('YYYY-MM') === moment(startDate).format('YYYY-MM')) {
+      return 'BULAN INI'
+    } else {
+      return moment(startDate).format('MMM YYYY')
+    }
+  }
+
+  const lastMonth = () => {
+    if (TODAY.format('YYYY-MM') === moment(startDate).format('YYYY-MM')) {
+      return 'BULAN LALU'
+    } else {
+      return moment(startDate).subtract(1, 'months').format('MMM YYYY')
+    }
+  }
+
+  const future = () => {
+    if (TODAY.format('YYYY-MM') === moment(startDate).format('YYYY-MM')) {
+      return 'BULAN LALU'
+    } else {
+      return moment(startDate).add(1, 'months').format('MMM YYYY')
+    }
+  }
+
   const renderTransactionHistory = () => {
     return (
       <div>
         <div className={classes.title}>
-          Riwayat Transaksi
+          <div style={{
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
+            <Typography>
+              Riwayat Transaksi
+            </Typography>
+            <div>
+              <FormControl style={{ width: '7.5rem', height: '2rem', marginRight: '1rem' }}>
+                <InputLabel id="demo-simple-select-label">Bulan</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  onChange={(event) => setMonth(event.target.value)}
+                  value={month}
+                >
+                  {MONTHS.map(menuMonth => (
+                    <MenuItem key={menuMonth.key} value={menuMonth.key}>
+                      {menuMonth.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <FormControl style={{ width: '5rem' }}>
+                <InputLabel id="demo-simple-select-label">Tahun</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  onChange={(event) => setYear(event.target.value)}
+                  value={year}
+                >
+                  {YEARS.map(menuYear => (
+                    <MenuItem key={menuYear} value={menuYear}>
+                      {menuYear}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <IconButton onClick={() => handleSearch()} color="primary" aria-label="search">
+                <Search />
+              </IconButton>
+            </div>
+          </div>
         </div>
         <div>
           <AppBar position="static" color="default">
@@ -442,114 +543,18 @@ const Record = () => {
               onChange={(event, newIndex) => changeTransactionTab(newIndex)}
               aria-label="simple tabs example"
             >
-              <Tab label="BULAN LALU" {...a11yProps(0)} />
-              <Tab label="BULAN INI" {...a11yProps(1)} />
-              <Tab label="BULAN DEPAN" {...a11yProps(2)} />
+              <Tab label={lastMonth()} {...a11yProps(0)} />
+              <Tab label={thisMonth()} {...a11yProps(1)} />
+              <Tab label={future()} {...a11yProps(2)} />
             </Tabs>
           </AppBar>
-          <TabPanel value={transactionTabIndex} index={0}>
-            <div>
-              <div style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                }}
-              >
-                <div>
-                  {moment(startDate).format('MMMM YYYY')}
-                </div>
-                <div>
-                  <FormControl style={{ width: '7rem', marginRight: '1rem' }}>
-                    <InputLabel id="demo-simple-select-label">Bulan</InputLabel>
-                    <Select
-                      labelId="demo-simple-select-label"
-                      id="demo-simple-select"
-                      onChange={(event) => setMonth(event.target.value)}
-                      value={month}
-                    >
-                      <MenuItem value={0}>Januari</MenuItem>
-                      <MenuItem value={1}>Februari</MenuItem>
-                      <MenuItem value={2}>Maret</MenuItem>
-                      <MenuItem value={3}>April</MenuItem>
-                      <MenuItem value={4}>May</MenuItem>
-                      <MenuItem value={5}>Juni</MenuItem>
-                      <MenuItem value={6}>Juli</MenuItem>
-                      <MenuItem value={7}>Agustus</MenuItem>
-                      <MenuItem value={8}>September</MenuItem>
-                      <MenuItem value={9}>Oktober</MenuItem>
-                      <MenuItem value={10}>November</MenuItem>
-                      <MenuItem value={11}>Desember</MenuItem>
-                    </Select>
-                  </FormControl>
-                  <FormControl style={{ width: '5rem' }}>
-                    <InputLabel id="demo-simple-select-label">Tahun</InputLabel>
-                    <Select
-                      labelId="demo-simple-select-label"
-                      id="demo-simple-select"
-                      onChange={(event) => setYear(event.target.value)}
-                      value={year}
-                    >
-                      <MenuItem value={2020}>2020</MenuItem>
-                      <MenuItem value={2021}>2021</MenuItem>
-                      <MenuItem value={2022}>2022</MenuItem>
-                    </Select>
-                  </FormControl>
-                  <IconButton onClick={() => handleSearch()} color="primary" aria-label="search">
-                    <Search />
-                  </IconButton>
-                </div>
-              </div>
-              {renderBalance()}
-              <div>
-                {recordList.data && Object.keys(recordList.data).map((key) => {
-                    return (
-                      <div>
-                        <div>
-                          {moment(key).format('DD MMMM YYYY')}
-                        </div>
-                        <Divider />
-                        {recordList.data[key].map((recordData) => {
-                          return (
-                            <div
-                              className={classNames(classes.recordList, {
-                                [classes.selectedRecord]: recordData.id === record.id,
-                              })}
-                              onClick={() => selectRecord(recordData)}
-                            >
-                              <div className={classes.transactionDetail}>
-                                <Lens />
-                                <div style={{ flex: 1 }}>
-                                  <div className={classes.transactionRecord}>
-                                    <span>
-                                      {recordData.category.name}
-                                    </span>
-                                    <span>
-                                      {recordData.type === 'expense' ? '-' + Number(recordData.amount) : Number(recordData.amount)}
-                                    </span>
-                                  </div>
-                                </div>
-                              </div>
-                              <div className={classes.transactionNote}>
-                                {recordData.note}
-                              </div>
-                            </div>
-                          )
-                        })}
-                      </div>
-                    )
-                  })
-                }
-              </div>
-            </div>
-          </TabPanel>
           <TabPanel value={transactionTabIndex} index={1}>
             <div>
               {renderBalance()}
               <div>
                 {recordList.data && Object.keys(recordList.data).map((key) => {
                     return (
-                      <div>
+                      <div key={key}>
                         <div>
                           {moment(key).format('DD MMMM YYYY')}
                         </div>
@@ -557,6 +562,7 @@ const Record = () => {
                         {recordList.data[key].map((recordData) => {
                           return (
                             <div
+                              key={recordData.id}
                               className={classNames(classes.recordList, {
                                 [classes.selectedRecord]: recordData.id === record.id,
                               })}
@@ -566,63 +572,18 @@ const Record = () => {
                                 <Lens />
                                 <div style={{ flex: 1 }}>
                                   <div className={classes.transactionRecord}>
-                                    <span>
+                                    <Typography>
                                       {recordData.category.name}
-                                    </span>
-                                    <span>
+                                    </Typography>
+                                    <Typography>
                                       {recordData.type === 'expense' ? '-' + Number(recordData.amount) : Number(recordData.amount)}
-                                    </span>
+                                    </Typography>
                                   </div>
                                 </div>
                               </div>
-                              <div className={classes.transactionNote}>
+                              <Typography className={classes.transactionNote}>
                                 {recordData.note}
-                              </div>
-                            </div>
-                          )
-                        })}
-                      </div>
-                    )
-                  })
-                }
-              </div>
-            </div>
-          </TabPanel>
-          <TabPanel value={transactionTabIndex} index={2}>
-            <div>
-              {renderBalance()}
-              <div>
-                {recordList.data && Object.keys(recordList.data).map((key) => {
-                    return (
-                      <div>
-                        <div>
-                          {moment(key).format('DD MMMM YYYY')}
-                        </div>
-                        <Divider />
-                        {recordList.data[key].map((recordData) => {
-                          return (
-                            <div
-                              className={classNames(classes.recordList, {
-                                [classes.selectedRecord]: recordData.id === record.id,
-                              })}
-                              onClick={() => selectRecord(recordData)}
-                            >
-                              <div className={classes.transactionDetail}>
-                                <Lens />
-                                <div style={{ flex: 1 }}>
-                                  <div className={classes.transactionRecord}>
-                                    <span>
-                                      {recordData.category.name}
-                                    </span>
-                                    <span>
-                                      {recordData.type === 'expense' ? '-' + Number(recordData.amount) : Number(recordData.amount)}
-                                    </span>
-                                  </div>
-                                </div>
-                              </div>
-                              <div className={classes.transactionNote}>
-                                {recordData.note}
-                              </div>
+                              </Typography>
                             </div>
                           )
                         })}
@@ -643,7 +604,7 @@ const Record = () => {
       <div className={classes.container}>
         <div className={classes.header}>
           <Button aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
-            Hi, {user ? user.name : ''}
+            Hi, {user ? user.name : ''} <ArrowDropDown />
           </Button>
           <Menu
             id="simple-menu"
@@ -666,6 +627,7 @@ const Record = () => {
           </div>
         </div>
         {renderCategoryDialog()}
+        {renderDeleteDialog()}
       </div>
     </div>
   )

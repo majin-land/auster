@@ -90,5 +90,6 @@ export default (theme) => ({
     backgroundColor: theme.color.red,
     fontWeight: 'bold',
     color: 'white',
+    margin: '0 1rem',
   },
 })

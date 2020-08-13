@@ -6,13 +6,8 @@ import {
   DialogActions,
   Button,
 } from '@material-ui/core'
-import { makeStyles } from '@material-ui/core/styles'
 
-import styles from './styles'
-
-const useStyles = makeStyles(styles)
-
-const DeleteDialog = (props) => {
+const ConfirmDialog = (props) => {
   const {
     open,
     title,
@@ -21,11 +16,9 @@ const DeleteDialog = (props) => {
     onAccept,
   } = props
 
-  const classes = useStyles()
-
   return (
     <Dialog
-      maxWidth="sm"
+      maxWidth="lg"
       open={open}
       onClose={(event) => {
         event.preventDefault()
@@ -41,13 +34,12 @@ const DeleteDialog = (props) => {
       <DialogActions>
         <Button
           variant="text"
-          color="primary"
           onClick={onClose}
+          style={{ texttransform: "none" }}
         >
           Batal
         </Button>
         <Button
-          variant="contained"
           onClick={(event) => {
             event.preventDefault()
             onAccept()
@@ -60,4 +52,4 @@ const DeleteDialog = (props) => {
   )
 }
 
-export default DeleteDialog
+export default ConfirmDialog
