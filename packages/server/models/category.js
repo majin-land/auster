@@ -19,6 +19,11 @@ Category.init({
     type: DataTypes.TEXT,
     allowNull: false,
   },
+  type: {
+    type: DataTypes.TEXT,
+    defaultValue: 'expense',
+    allowNull: false,
+  },
   parentId: {
     type: DataTypes.BIGINT,
     allowNull: true,

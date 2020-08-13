@@ -58,4 +58,6 @@ Session.generateAccess = async (id) => {
   }
 }
 
+Session.belongsTo(db.models.User, { as: 'user' })
+
 module.exports = Session

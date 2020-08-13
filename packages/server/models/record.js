@@ -38,6 +38,10 @@ Record.init({
     type: DataTypes.DATE,
     allowNull: false,
   },
+  note: {
+    type: DataTypes.TEXT,
+    allowNull: true,
+  },
 }, {
   sequelize: db,
   tableName: 'Record',
@@ -51,8 +55,6 @@ Record.init({
   },
 })
 
-Record.associate = function (models) {
-  Record.belongsTo(models.Category, { as: 'category' })
-}
+Record.belongsTo(db.models.Category, { as: 'category' })
 
 module.exports = Record

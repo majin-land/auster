@@ -1,6 +1,7 @@
 export default (theme) => ({
   container: {
     maxWidth: theme.global.maxContentWidth,
+    margin: 'auto',
     padding: '0.5rem',
   },
   currentBalance: {
@@ -26,18 +27,16 @@ export default (theme) => ({
   },
   content: {
     display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: 'column',
   },
-  leftContent: {
-    flex: 1,
-    marginRight: '0.5rem',
-  },
-  rightContent: {
-    flex: 1,
-    padding: '0.5rem',
-    border: '1px solid lightgrey',
-    borderRadius: '5px',
+  transactionHistoryContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    marginLeft: '300px',
+
+    [theme.breakpoints.down('xs')]: {
+      marginLeft: '0',
+    },
   },
   transactionDetail: {
     display: 'flex',
@@ -51,5 +50,41 @@ export default (theme) => ({
   },
   transactionNote: {
     fontSize: '0.8rem',
+    marginLeft: '1.8rem',
+  },
+  wrapperCategory: {
+    maxHeight: '10rem',
+  },
+  listCategory: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    cursor: 'pointer',
+  },
+  listCategoryChildren: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginLeft: '1rem',
+    cursor: 'pointer',
+  },
+  checkIcon: {
+    color: '#6557b5',
+  },
+  recordList: {
+    padding: '0.5rem',
+    cursor: 'pointer',
+    '&:hover': {
+      backgroundColor: '#F0F0F0',
+    },
+  },
+  selectedRecord: {
+    backgroundColor: '#F0F0F0',
+  },
+  deleteButton: {
+    backgroundColor: theme.color.red,
+    fontWeight: 'bold',
+    color: 'white',
+    margin: '0 1rem',
   },
 })

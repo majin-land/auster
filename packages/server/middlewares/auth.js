@@ -14,7 +14,7 @@ module.exports.auth = async (req, res, next) => {
     const session = await Session.findOne({ where: { token } })
     if (!session) throw new Error('000401')
 
-    const user = await User.findOne({ where: { userId: session.userId } })
+    const user = await User.findOne({ where: { id: session.userId } })
     if (!user || !user.id) throw new Error('000401')
 
     req.currentUser = user.display()
