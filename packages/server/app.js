@@ -1,5 +1,6 @@
 const express = require('express')
 require('express-async-errors')
+const { createHttpTerminator } = require('http-terminator')
 const compression = require('compression')
 const noCache = require('nocache')
 const requireDir = require('require-dir')
@@ -9,9 +10,12 @@ const helmet = require('helmet')
 const frameguard = require('frameguard')
 const requestIp = require('request-ip')
 const useragent = require('express-useragent')
+const { Sequelize } = require('sequelize')
+const { Umzug, SequelizeStorage } = require('umzug')
 
 const { auth } = require('./middlewares/auth')
 const exception = require('./utils/exception')
+const { db } = require('./models/db')
 
 const routes = requireDir('./controllers', { recurse: true })
 
@@ -76,6 +80,40 @@ app.use((req, res) => {
   }
 })
 
-app.listen(port, () => console.log(`Server listening http on ${port}`))
+const umzug = new Umzug({
+  logging: console.log,
+  storage: new SequelizeStorage({ sequelize: db }),
+  migrations: {
+    path: './migrations',
+    params: [db.getQueryInterface(), Sequelize],
+  },
+})
+
+let httpTerminator
+
+umzug
+  .up()
+  .then(() => {
+    const server = app.listen(port, () => {
+      console.log(`Server listening http on ${port}`)
+      httpTerminator = createHttpTerminator({ server })
+      process.send('ready')
+    })
+  })
+  .catch((err) => {
+    console.log('ERROR migrating DB:', err)
+    process.exit()
+  })
+
+process.on('SIGINT', async () => {
+  console.log('Received shutdown signal')
+  await db.close().catch(() => process.exit(1))
+  console.log('DB closed')
+  if (httpTerminator) {
+    await httpTerminator.terminate().catch(() => process.exit(1))
+    console.log('server terminated')
+  }
+  process.exit(0)
+})
 
 module.exports = app
