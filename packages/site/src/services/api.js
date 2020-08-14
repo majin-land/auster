@@ -1,9 +1,9 @@
 import { create } from 'apisauce'
 import qs from 'qs'
 
-const scheme = process.env.SERVER_SCHEME || 'http'
-const host = process.env.SERVER_HOST || 'localhost'
-const port = process.env.SERVER_PORT || '4010'
+const scheme = process.env.API_SERVER_SCHEME || 'http'
+const host = process.env.API_SERVER_HOST || 'localhost'
+const port = process.env.API_SERVER_PORT || '4010'
 
 const baseURL = `${scheme}://${host}:${port}`
 

@@ -1,18 +1,14 @@
 const AWS = require('aws-sdk')
 const s3 = require('s3-node-client')
 
-const { TARGET } = process.env
-
 const deployConfig = require('./deploy-config.js')
-
-const configTarget = deployConfig[TARGET]
 
 const build = require('./build')
 const task = require('./task')
 
 const cloudfront = new AWS.CloudFront({
-  accessKeyId: deployConfig.key,
-  secretAccessKey: deployConfig.secret,
+  accessKeyId: deployConfig.awsKey,
+  secretAccessKey: deployConfig.awsSecret,
 })
 
 const s3Client = s3.createClient({
@@ -22,9 +18,9 @@ const s3Client = s3.createClient({
   multipartUploadThreshold: 20971520, // this is the default (20 MB)
   multipartUploadSize: 15728640, // this is the default (15 MB)
   s3Options: {
-    accessKeyId: deployConfig.key,
-    secretAccessKey: deployConfig.secret,
-    region: 'ap-southeast-1',
+    accessKeyId: deployConfig.awsKey,
+    secretAccessKey: deployConfig.awsSecret,
+    region: deployConfig.s3Region,
     // endpoint: 's3.yourdomain.com',
     // sslEnabled: false
     // any other options are passed to new AWS.S3()
@@ -35,12 +31,12 @@ const s3Client = s3.createClient({
 const uploadS3 = task('uploadS3', () => new Promise((resolve) => {
   const params = {
     localDir: './dist',
-    deleteRemoved: true, // default false, whether to remove s3 objects
+    // deleteRemoved: true, // default false, whether to remove s3 objects
     // that have no corresponding local file.
     s3Params: {
       Bucket: deployConfig.s3Bucket,
-      Prefix: configTarget.s3Prefix,
       ACL: 'public-read',
+      CacheControl: 'max-age=31536000',
       // other options supported by putObject, except Body and ContentLength.
       // See: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putObject-property
     },
@@ -61,7 +57,7 @@ const uploadS3 = task('uploadS3', () => new Promise((resolve) => {
 const invalidateCache = task('invalidateCache', () => {
   const now = new Date()
   const key = `${now.getFullYear()}-${now.getMonth()}-${now.getDay()} ${now.getHours()}:${now.getMinutes()}`
-  return Promise.all(configTarget.cloudFrontDistIds.map(cloudfrontId => new Promise((resolve) => {
+  return Promise.all(deployConfig.cloudFrontDistIds.map(cloudfrontId => new Promise((resolve) => {
     return cloudfront.createInvalidation({
       DistributionId: cloudfrontId, /* required */
       InvalidationBatch: { /* required */
