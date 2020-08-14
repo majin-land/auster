@@ -40,6 +40,8 @@ import NumberField from 'site/components/number-field'
 
 import styles from './styles'
 
+const ASSET_URL = process.env.ASSET_URL
+
 const TODAY = moment()
 const MAX_YEAR = TODAY.year()
 const MONTHS = []
@@ -321,29 +323,41 @@ const Record = () => {
           <TabPanel value={categoryTabIndex} index={0}>
             {categoryList.map((category) => {
               if (category.type !== 'expense') return null
+              const name = category.name
+              const removeSpecialChar = name.replace(/[^\w\s]/gi, '')
+              const iconName = removeSpecialChar.replace(' ', '_').replace(' ', '').toLowerCase()
               return (
                 <div key={category.id}>
                   <div
                     className={classes.listCategory}
                     onClick={() => selectCategory(category.id, category.name, 'expense')}
                   >
-                    <Typography>
-                      {category.name}
-                    </Typography>
+                    <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                      <img src={`${ASSET_URL}/assets/icons/${iconName}.png`} style={{ marginRight: '1rem' }} />
+                      <Typography>
+                        {category.name}
+                      </Typography>
+                    </div>
                     {category.id === record.category && <Check className={classes.checkIcon} />}
                   </div>
                   <div>
                     {category.children &&
                       category.children.map((data) => {
+                        const childName = data.name
+                        const removeChildSpecialChar = childName.replace(/[^\w\s]/gi, '')
+                        const childIconName = removeChildSpecialChar.replace(' ', '_').replace(' ', '').toLowerCase()
                         return (
                           <div
                             key={data.id}
                             className={classes.listCategoryChildren}
                             onClick={() => selectCategory(data.id, data.name, 'expense')}
                           >
-                            <Typography>
-                              {data.name}
-                            </Typography>
+                            <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                              <img src={`${ASSET_URL}/assets/icons/${childIconName}.png`} style={{ marginRight: '1rem' }} />
+                              <Typography>
+                                {data.name}
+                              </Typography>
+                            </div>
                             {data.id === record.category && <Check className={classes.checkIcon} />}
                           </div>
                         )
@@ -542,6 +556,9 @@ const Record = () => {
                       </div>
                       <Divider />
                       {group.records.map((recordData) => {
+                        const name = recordData.category.name
+                        const removeSpecialChar = name.replace(/[^\w\s]/gi, '')
+                        const iconName = removeSpecialChar.replace(' ', '_').replace(' ', '').toLowerCase()
                         return (
                           <div
                             key={recordData.id}
@@ -553,9 +570,12 @@ const Record = () => {
                             <div className={classes.transactionDetail}>
                               <div style={{ flex: 1 }}>
                                 <div className={classes.transactionRecord}>
-                                  <Typography>
-                                    {recordData.category.name}
-                                  </Typography>
+                                  <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                                    <img src={`${ASSET_URL}/assets/icons/${iconName}.png`} style={{ marginRight: '1rem' }} />
+                                    <Typography>
+                                      {recordData.category.name}
+                                    </Typography>
+                                  </div>
                                   <Typography>
                                     {recordData.type === 'expense' ? `-${formatNumber(recordData.amount)}` : formatNumber(recordData.amount)}
                                   </Typography>

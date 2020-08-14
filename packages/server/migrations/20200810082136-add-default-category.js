@@ -2,7 +2,7 @@ module.exports = {
   up: (queryInterface) => queryInterface.sequelize.transaction(async (transaction) => {
     await queryInterface.bulkInsert('Category', [{
       id: 1,
-      name: 'Makanan & Minuman',
+      name: 'Makan & Minuman',
       type: 'expense',
       parent_id: 0,
       created_at: new Date(),
@@ -212,7 +212,7 @@ module.exports = {
       updated_at: new Date(),
     }, {
       id: 31,
-      name: 'Kebutuhan bayi',
+      name: 'Perlengkapan bayi',
       type: 'expense',
       parent_id: 29,
       created_at: new Date(),

@@ -47,6 +47,7 @@ export default (theme) => ({
     display: 'flex',
     justifyContent: 'space-between',
     fontSize: '1rem',
+    alignItems: 'center',
   },
   transactionNote: {
     fontSize: '0.8rem',
@@ -60,6 +61,8 @@ export default (theme) => ({
     flexDirection: 'row',
     justifyContent: 'space-between',
     cursor: 'pointer',
+    marginTop: '1rem',
+    alignItems: 'center',
   },
   listCategoryChildren: {
     display: 'flex',
@@ -67,6 +70,8 @@ export default (theme) => ({
     justifyContent: 'space-between',
     marginLeft: '1rem',
     cursor: 'pointer',
+    marginTop: '1rem',
+    alignItems: 'center',
   },
   checkIcon: {
     color: '#6557b5',
