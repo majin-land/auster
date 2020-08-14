@@ -321,9 +321,6 @@ const Record = () => {
           <TabPanel value={categoryTabIndex} index={0}>
             {categoryList.map((category) => {
               if (category.type !== 'expense') return null
-              const name = category.name
-              const removeSpecialChar = name.replace(/[^\w\s]/gi, '')
-              const imgName = removeSpecialChar.replace(' ', '_').replace(' ', '')
               return (
                 <div key={category.id}>
                   <div
@@ -338,9 +335,6 @@ const Record = () => {
                   <div>
                     {category.children &&
                       category.children.map((data) => {
-                        const childName = data.name
-                        const removeChildSpecialChar = childName.replace(/[^\w\s]/gi, '')
-                        const childImgName = removeChildSpecialChar.replace(' ', '_').replace(' ', '')
                         return (
                           <div
                             key={data.id}
