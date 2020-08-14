@@ -32,7 +32,6 @@ module.exports = function (api) {
         plugins: [
           '@babel/plugin-transform-react-constant-elements',
           '@babel/plugin-transform-react-inline-elements',
-          'transform-react-remove-prop-types',
           ['transform-react-remove-prop-types', { ignoreFilenames: ['node_modules'] }],
           ['transform-remove-console', { exclude: ['info'] }],
           [

@@ -1,0 +1,7 @@
+module.exports = {
+  awsKey: '',
+  awsSecret: '',
+  s3Bucket: '',
+  s3Region: '',
+  cloudFrontDistIds: [],
+}
