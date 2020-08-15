@@ -92,4 +92,9 @@ export default (theme) => ({
     color: 'white',
     margin: '0 1rem',
   },
+  categoryIcon: {
+    marginRight: '1rem',
+    width: '1.5rem',
+    height: '1.5rem',
+  },
 })

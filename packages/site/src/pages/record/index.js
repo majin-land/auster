@@ -333,7 +333,10 @@ const Record = () => {
                     onClick={() => selectCategory(category.id, category.name, 'expense')}
                   >
                     <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                      <img src={`${ASSET_URL}/assets/icons/${iconName}.png`} style={{ marginRight: '1rem' }} />
+                      <img
+                        src={`${ASSET_URL}/assets/icons/${iconName}.png`}
+                        className={classes.categoryIcon}
+                      />
                       <Typography>
                         {category.name}
                       </Typography>
@@ -353,7 +356,10 @@ const Record = () => {
                             onClick={() => selectCategory(data.id, data.name, 'expense')}
                           >
                             <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                              <img src={`${ASSET_URL}/assets/icons/${childIconName}.png`} style={{ marginRight: '1rem' }} />
+                              <img
+                                src={`${ASSET_URL}/assets/icons/${childIconName}.png`}
+                                className={classes.categoryIcon}
+                              />
                               <Typography>
                                 {data.name}
                               </Typography>
@@ -571,7 +577,10 @@ const Record = () => {
                               <div style={{ flex: 1 }}>
                                 <div className={classes.transactionRecord}>
                                   <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-                                    <img src={`${ASSET_URL}/assets/icons/${iconName}.png`} style={{ marginRight: '1rem' }} />
+                                    <img
+                                      src={`${ASSET_URL}/assets/icons/${iconName}.png`}
+                                      className={classes.categoryIcon}
+                                    />
                                     <Typography>
                                       {recordData.category.name}
                                     </Typography>
