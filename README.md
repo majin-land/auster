@@ -1,12 +1,24 @@
-## Auster - money management solution
+## Auster by IMAJIN - money management solution
+
+Please check out Auster at: [https://auster.imajin.land](https://auster.imajin.land)
+
+## Project Goals
+Imajin develop project Auster ini untuk menyebarkan ide pengelolaan uang pribadi
+dengan menyediakan system gratis yg gampang dipakai oleh masyarakat
+
+Dan disamping itu, kita ingin menggunakan source code project ini
+sebagai contoh pengajaran web application development
+
+## Project Setup
 
 Setup process
 1. run `yarn install`
-2. copy .env.sample file and create .env file in each of the packages/site and packages/server
+2. copy .env.sample file and create .env file di folder yang sama
+3. setup database `auster` di localhost postgres
 3. run `yarn run dev`
 
 this will run both React web app and NodeJS server at the same time
-if you follow the port in the .env.sample
+if you follow the port in the .env
 http://localhost:4010 will be NodeJS server
 http://localhost:4020 will be React web app
 
