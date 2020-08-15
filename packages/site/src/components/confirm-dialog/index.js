@@ -18,7 +18,8 @@ const ConfirmDialog = (props) => {
 
   return (
     <Dialog
-      maxWidth="lg"
+      maxWidth="xs"
+      fullWidth={true}
       open={open}
       onClose={(event) => {
         event.preventDefault()
