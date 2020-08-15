@@ -3,6 +3,7 @@ export default (theme) => ({
     maxWidth: theme.global.maxContentWidth,
     margin: 'auto',
     padding: '0.5rem',
+    marginTop: 0,
   },
   currentBalance: {
     padding: '0.5rem',
@@ -96,5 +97,12 @@ export default (theme) => ({
     marginRight: '1rem',
     width: '1.5rem',
     height: '1.5rem',
+  },
+  selectCategoryField: {
+    padding: '0.2rem 0 0.5rem',
+    display: 'flex',
+    justifyContent: 'space-between',
+    cursor: 'pointer',
+    borderBottom: '1px solid grey',
   },
 })

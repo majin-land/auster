@@ -226,10 +226,7 @@ const Record = () => {
               }}
             />
           </FormControl>
-          <div
-            onClick={() => setOpen(true)}
-            style={{ padding: '0.2rem 0 0.5rem', display: 'flex', justifyContent: 'space-between', cursor: 'pointer', borderBottom: '1px solid grey' }}
-          >
+          <div onClick={() => setOpen(true)} className={classes.selectCategoryField}>
             <Typography>
               {record && record.categoryName ? record.categoryName : 'Pilih Kategori'}
             </Typography>
