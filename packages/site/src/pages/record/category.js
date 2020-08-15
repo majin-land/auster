@@ -106,29 +106,47 @@ const CategoryDialog = (props) => {
         <TabPanel value={categoryTabIndex} index={1}>
           {categoryList.map((category) => {
             if (category.type !== 'income') return null
+            const name = category.name
+            const removeSpecialChar = name.replace(/[^\w\s]/gi, '')
+            const iconName = removeSpecialChar.replace(' ', '_').replace(' ', '').toLowerCase()
             return (
               <div key={category.id}>
                 <div
                   className={classes.listCategory}
                   onClick={() => selectCategory(category.id, category.name, 'income')}
                 >
-                  <Typography>
-                    {category.name}
-                  </Typography>
+                  <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                    <img
+                      src={`${ASSET_URL}/assets/icons/${iconName}.png`}
+                      className={classes.categoryIcon}
+                    />
+                    <Typography>
+                      {category.name}
+                    </Typography>
+                  </div>
                   {category.id === record.category && <Check className={classes.checkIcon} />}
                 </div>
                 <div>
                   {category.children &&
                   category.children.map((data) => {
+                    const childName = data.name
+                    const removeChildSpecialChar = childName.replace(/[^\w\s]/gi, '')
+                    const childIconName = removeChildSpecialChar.replace(' ', '_').replace(' ', '').toLowerCase()
                     return (
                       <div
                         key={data.id}
                         className={classes.listCategoryChildren}
                         onClick={() => selectCategory(data.id, data.name, 'income')}
                       >
-                        <Typography>
-                          {data.name}
-                        </Typography>
+                        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                          <img
+                            src={`${ASSET_URL}/assets/icons/${childIconName}.png`}
+                            className={classes.categoryIcon}
+                          />
+                          <Typography>
+                            {data.name}
+                          </Typography>
+                        </div>
                         {data.id === record.category && <Check className={classes.checkIcon} />}
                       </div>
                     )
