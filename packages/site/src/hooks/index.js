@@ -12,6 +12,23 @@ export const usePrevious = (value) => {
   return ref.current
 }
 
+// https://dev.to/gabe_ragland/debouncing-with-react-hooks-jci
+export const useDebounce = (value, delay) => {
+  const [debouncedValue, setDebouncedValue] = useState(value)
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value)
+    }, delay)
+
+    return () => {
+      clearTimeout(handler)
+    }
+  }, [value, delay])
+
+  return debouncedValue
+}
+
 // https://medium.com/better-programming/react-state-management-in-2020-719d10c816bf
 export const useRequest = (api) => {
   const [isLoading, setLoading] = useState(false)
