@@ -81,7 +81,7 @@ router.post('/', async (req, res) => {
 
   const record = await Record.create({
     userId: req.currentUser.id,
-    categoryId: category,
+    categoryId: category.id,
     type,
     amount,
     transactionDate,
@@ -99,7 +99,7 @@ router.put('/:id', async (req, res) => {
 
   const record = await Record.findOne({ where })
   record.type = req.body.type
-  record.categoryId = req.body.category
+  record.categoryId = req.body.category.id
   record.amount = req.body.amount
   record.transactionDate = req.body.transactionDate
   record.note = req.body.note

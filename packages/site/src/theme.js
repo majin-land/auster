@@ -26,6 +26,7 @@ const color = {
   cyan: '#70FFE9',
   transparent: 'rgba(0, 0, 0, 0)',
   opaque: 'rgba(255, 255, 255, 0.94)',
+  white: '#fff',
 }
 
 // https://material.io/resources/color

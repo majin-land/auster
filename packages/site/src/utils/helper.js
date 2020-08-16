@@ -5,3 +5,11 @@ export const formatNumber = (num) => {
   const number = Number(num)
   return numberFormat.format(number)
 }
+
+export const categoryIconName = (name) => {
+  return name
+    .toLowerCase()
+    .replace(/[^\w\s]/gi, '')
+    .replace(' ', '_')
+    .replace(' ', '')
+}

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
 import { ArrowForwardIos } from '@material-ui/icons'
 import { KeyboardDatePicker } from '@material-ui/pickers'
@@ -10,34 +10,52 @@ import {
   Typography,
 } from '@material-ui/core'
 
+import { useGlobalState, DEFAULT_RECORD } from 'site/state'
 import NumberField from 'site/components/number-field'
+import ConfirmDialog from 'site/components/confirm-dialog'
+import CategoryDialog from '../category'
 
 import styles from './styles'
 
 const useStyles = makeStyles(styles)
 
-const TransactionForm = (props) => {
+const RecordForm = (props) => {
   const classes = useStyles()
-  const {
-    record,
-    setRecord,
-    handleSubmit,
-    setOpen,
-    handleCancel,
-    setDeleteConfirmDialog,
-  } = props
+
+  const [selectedRecord] = useGlobalState('selectedRecord')
+
+  const [record, setRecord] = useState(DEFAULT_RECORD)
+  const [categoryDialog, setCategoryDialog] = useState(false)
+  const [deleteConfirmDialog, setDeleteConfirmDialog] = useState(false)
+
+  useEffect(() => {
+    if (!selectedRecord) {
+      setRecord(DEFAULT_RECORD)
+      return
+    }
+    setRecord(selectedRecord)
+  }, [selectedRecord])
+
+  const onDelete = async () => {
+    await props.onDelete(record)
+    setDeleteConfirmDialog(false)
+  }
+
+  const onSubmit = async (event) => {
+    event.preventDefault()
+    await props.onSubmit({
+      ...record,
+      category: { id: record.category.id },
+    })
+    setRecord(DEFAULT_RECORD)
+  }
 
   return (
-    <Paper style={{ width: '280px', padding: '1rem', position: 'fixed' }}>
+    <Paper className={classes.formContainer}>
       <Typography className={classes.title}>
         {record.id ? 'Detail Transaksi' : 'Tambah Transaksi'}
       </Typography>
-      <form
-        onSubmit={(event) => {
-          event.preventDefault()
-          handleSubmit(record)
-        }}
-      >
+      <form onSubmit={onSubmit}>
         <FormControl fullWidth style={{ marginBottom: '1rem' }}>
           <TextField
             label="Jumlah"
@@ -51,9 +69,9 @@ const TransactionForm = (props) => {
             }}
           />
         </FormControl>
-        <div onClick={() => setOpen(true)} className={classes.selectCategoryField}>
+        <div onClick={() => setCategoryDialog(true)} className={classes.selectCategoryField}>
           <Typography>
-            {record && record.categoryName ? record.categoryName : 'Pilih Kategori'}
+            {record && record.category ? record.category.name : 'Pilih Kategori'}
           </Typography>
           <ArrowForwardIos />
         </div>
@@ -86,7 +104,7 @@ const TransactionForm = (props) => {
               variant="contained"
               size="large"
               color="secondary"
-              onClick={handleCancel}
+              onClick={props.onCancel}
               style={{ color: 'white', fontWeight: 'bold' }}
             >
               Batal
@@ -113,8 +131,24 @@ const TransactionForm = (props) => {
           </Button>
         </div>
       </form>
+      <CategoryDialog
+        open={categoryDialog}
+        selectedCategory={record.category}
+        onClose={() => setCategoryDialog(false)}
+        onSelectCategory={(category) => {
+          setRecord({ ...record, category })
+          setCategoryDialog(false)
+        }}
+      />
+      <ConfirmDialog
+        open={deleteConfirmDialog}
+        title="Konfirmasi Hapus"
+        content="Hapus transaksi ini?"
+        onClose={() => setDeleteConfirmDialog(false)}
+        onAccept={onDelete}
+      />
     </Paper>
   )
 }
 
-export default TransactionForm
+export default RecordForm

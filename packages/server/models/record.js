@@ -33,6 +33,9 @@ Record.init({
     type: DataTypes.DECIMAL(12, 2),
     allowNull: false,
     defaultValue: 0,
+    get() {
+      return Number(this.getDataValue('amount'))
+    },
   },
   transactionDate: {
     type: DataTypes.DATE,
