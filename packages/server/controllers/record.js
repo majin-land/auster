@@ -77,12 +77,14 @@ router.get('/:id', async (req, res) => {
 })
 
 router.post('/', async (req, res) => {
-  const { type, category, amount, transactionDate, note } = req.body
+  const { category, amount, transactionDate, note } = req.body
+
+  const cat = await Category.findOne({ where: { id: category.id } })
 
   const record = await Record.create({
     userId: req.currentUser.id,
     categoryId: category.id,
-    type,
+    type: cat.type,
     amount,
     transactionDate,
     note,
@@ -97,8 +99,10 @@ router.put('/:id', async (req, res) => {
     userId: req.currentUser.id,
   }
 
+  const cat = await Category.findOne({ where: { id: req.body.category.id } })
+
   const record = await Record.findOne({ where })
-  record.type = req.body.type
+  record.type = cat.type
   record.categoryId = req.body.category.id
   record.amount = req.body.amount
   record.transactionDate = req.body.transactionDate

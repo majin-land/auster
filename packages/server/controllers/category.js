@@ -3,7 +3,9 @@ const router = require('express').Router()
 const { Category } = require('../models')
 
 router.get('/', async (req, res) => {
-  const result = await Category.findAndCountAll()
+  const result = await Category.findAndCountAll({
+    order: [['id', 'ASC']],
+  })
 
   res.json({
     list: result.rows.map(category => category.display()),
