@@ -5,8 +5,8 @@
   "description": "Money management system React web app",
   "scripts": {
     "dev": "NODE_ENV=development webpack-dev-server --config ./tools/webpack.config.js --mode development",
-    "build": "NODE_ENV=production node tools/build.js --mode production",
-    "publish": "NODE_ENV=production node tools/publish.js --mode production",
+    "build": "NODE_ENV=production TARGET=prod node tools/build.js --mode production",
+    "publish": "NODE_ENV=production TARGET=prod node tools/publish.js --mode production",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "IMAJIN",

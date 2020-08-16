@@ -46,7 +46,7 @@ export default (theme) => ({
   },
   transactionNote: {
     fontSize: '0.8rem',
-    marginLeft: '1.8rem',
+    marginLeft: '2.8rem',
   },
   categoryIcon: {
     marginRight: '1rem',

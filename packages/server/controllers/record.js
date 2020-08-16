@@ -31,8 +31,8 @@ router.get('/:startDate/:endDate', async (req, res) => {
 
   const { income, expense } = result
     .reduce((total, record) => {
-      if (record.type === 'expense') total.expense += Number(record.amount)
-      if (record.type === 'income') total.income += Number(record.amount)
+      if (record.type === 'expense') total.expense += record.amount
+      if (record.type === 'income') total.income += record.amount
       return total
     }, { income: 0, expense: 0 })
 

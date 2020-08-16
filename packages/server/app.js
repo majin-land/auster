@@ -49,6 +49,7 @@ app.get('/', (req, res) => {
   })
 })
 
+// ROUTES -> link to controllers
 app.use('/public', routes.public)
 app.use('/session', routes.session)
 app.use('/category', routes.category)
