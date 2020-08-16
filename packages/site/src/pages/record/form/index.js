@@ -44,7 +44,10 @@ const RecordForm = (props) => {
   const onSubmit = async (event) => {
     event.preventDefault()
     await props.onSubmit({
-      ...record,
+      id: record.id,
+      amount: record.amount,
+      note: record.note,
+      transactionDate: record.transactionDate,
       category: { id: record.category.id },
     })
     setRecord(DEFAULT_RECORD)

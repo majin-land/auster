@@ -20,7 +20,7 @@ router.get('/:startDate/:endDate', async (req, res) => {
         model: Category,
         as: 'category',
         required: false,
-        attributes: ['name'],
+        attributes: ['id', 'name'],
       },
     ],
     order: [
@@ -80,6 +80,7 @@ router.post('/', async (req, res) => {
   const { category, amount, transactionDate, note } = req.body
 
   const cat = await Category.findOne({ where: { id: category.id } })
+  if (!cat) throw new Error('Category not found')
 
   const record = await Record.create({
     userId: req.currentUser.id,
@@ -100,6 +101,7 @@ router.put('/:id', async (req, res) => {
   }
 
   const cat = await Category.findOne({ where: { id: req.body.category.id } })
+  if (!cat) throw new Error('Category not found')
 
   const record = await Record.findOne({ where })
   record.type = cat.type
