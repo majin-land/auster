@@ -26,8 +26,8 @@ const config = {
       collate: 'utf8_general_ci',
       ssl: true,
     },
-    createdAt: 'created_at',
-    updatedAt: 'updated_at',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
   },
 }
 

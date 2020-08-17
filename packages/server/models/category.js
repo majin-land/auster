@@ -32,11 +32,11 @@ Category.init({
   sequelize: db,
   tableName: 'Category',
   getterMethods: {
-    created_at() {
-      return moment(this.getDataValue('created_at')).format()
+    createdAt() {
+      return moment(this.getDataValue('createdAt')).format()
     },
-    updated_at() {
-      return moment(this.getDataValue('updated_at')).format()
+    updatedAt() {
+      return moment(this.getDataValue('updatedAt')).format()
     },
   },
 })
