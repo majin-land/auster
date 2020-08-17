@@ -13,33 +13,34 @@ export const usePrevious = (value) => {
 }
 
 // https://medium.com/better-programming/react-state-management-in-2020-719d10c816bf
-export const useRequest = (api) => {
+export const useRequest = (api, options = { blocking: false }) => {
   const [isLoading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [response, setResponse] = useState(null)
 
   const [errors, setErrors] = useGlobalState('errors')
 
-  const request = (params) => {
+  const request = async (params) => {
+    if (options.blocking && isLoading) return null
     setLoading(true)
     setError(false)
-
-    return api(params)
-      .then((data) => {
-        if (data.ok) {
-          setResponse(data)
-          return data
-        }
-        throw errorHandler(data)
-      })
-      .catch((e) => {
-        setError(e)
-        setErrors([
-          ...errors,
-          e,
-        ])
-      })
-      .finally(() => setLoading(false))
+    try {
+      const resp = await api(params)
+      if (resp.ok) {
+        setResponse(resp)
+        return resp
+      }
+      throw errorHandler(resp)
+    } catch (err) {
+      setError(err)
+      setErrors([
+        ...errors,
+        err,
+      ])
+    } finally {
+      setLoading(false)
+    }
+    return null
   }
 
   return { isLoading, error, response, request }
