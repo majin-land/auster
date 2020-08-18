@@ -22,9 +22,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com/imajin-land/auster.git"
+    "url": "git@github.com/majin-land/auster.git"
   },
-  "author": "IMAJIN",
+  "author": "Majin",
   "license": "MIT",
   "devDependencies": {
     "babel-eslint": "^10.1.0",
