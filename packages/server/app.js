@@ -1,13 +1,11 @@
 const express = require('express')
 require('express-async-errors')
 const { createHttpTerminator } = require('http-terminator')
-const compression = require('compression')
 const noCache = require('nocache')
 const requireDir = require('require-dir')
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const helmet = require('helmet')
-const frameguard = require('frameguard')
 const requestIp = require('request-ip')
 const useragent = require('express-useragent')
 const { Sequelize } = require('sequelize')
@@ -27,14 +25,15 @@ const isProduction = process.env.NODE_ENV === 'production'
 
 app.use(cors())
 app.use(noCache())
-app.use(bodyParser.json({ limit: '10mb' })) // for parsing application/json
-app.use(compression())
+app.use(bodyParser.json({ limit: '1mb' })) // for parsing application/json
+
+// if need to compress response to gzip format
+// include compression library and uncomment the code below
+// app.use(compression())
 
 if (isProduction) {
   // PRODUCTION optimization
-  app.disable('x-powered-by')
   app.use(helmet())
-  app.use(frameguard())
   app.use(requestIp.mw())
   app.use(useragent.express())
 }
