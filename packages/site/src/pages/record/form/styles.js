@@ -14,8 +14,12 @@ export default (theme) => ({
     color: 'white',
     margin: '0 1rem',
   },
+  categoryLabel: {
+    flex: 1,
+    fontSize: '1rem',
+  },
   categoryIcon: {
-    marginRight: '1rem',
+    marginRight: '0.5rem',
     width: '1.5rem',
     height: '1.5rem',
   },

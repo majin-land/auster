@@ -32,21 +32,25 @@ export default (theme) => ({
     backgroundColor: theme.color.primaryDark,
     color: theme.color.white,
   },
+  recordGroup: {
+    marginBottom: '0.5rem',
+  },
+  recordDate: {
+    fontSize: '0.8rem',
+  },
   transactionRecord: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: '0.3rem',
-    fontSize: '1rem',
   },
-  transactionInfo: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
+  recordLabel: {
+    flex: 1,
+    fontSize: '0.9rem',
   },
   transactionNote: {
-    fontSize: '0.8rem',
     marginLeft: '2.8rem',
+    fontSize: '0.8rem',
   },
   categoryIcon: {
     marginRight: '1rem',

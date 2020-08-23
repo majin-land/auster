@@ -10,7 +10,9 @@ import {
   Typography,
 } from '@material-ui/core'
 
+import { ASSET_URL } from 'site/config'
 import { useGlobalState, DEFAULT_RECORD } from 'site/state'
+import { categoryIconName } from 'site/utils/helper'
 import NumberField from 'site/components/number-field'
 import ConfirmDialog from 'site/components/confirm-dialog'
 import CategoryDialog from '../category'
@@ -73,7 +75,14 @@ const RecordForm = (props) => {
           />
         </FormControl>
         <div onClick={() => setCategoryDialog(true)} className={classes.selectCategoryField}>
-          <Typography>
+          {record.category && (
+            <img
+              src={`${ASSET_URL}/assets/icons/${categoryIconName(record.category.name)}.png`}
+              className={classes.categoryIcon}
+              alt={record.category.name}
+            />
+          )}
+          <Typography className={classes.categoryLabel}>
             {record && record.category ? record.category.name : 'Pilih Kategori'}
           </Typography>
           <ArrowForwardIos />
