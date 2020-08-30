@@ -28,6 +28,10 @@ Category.init({
     type: DataTypes.BIGINT,
     allowNull: true,
   },
+  userId: {
+    type: DataTypes.UUID,
+    allowNull: true,
+  },
 }, {
   sequelize: db,
   tableName: 'Category',

@@ -51,7 +51,7 @@ app.get('/', (req, res) => {
 // ROUTES -> link to controllers
 app.use('/public', routes.public)
 app.use('/session', routes.session)
-app.use('/category', routes.category)
+app.use('/category', auth, routes.category)
 app.use('/record', auth, routes.record)
 app.use('/user', auth, routes.user)
 

@@ -19,7 +19,7 @@ const ConfirmDialog = (props) => {
   return (
     <Dialog
       maxWidth="xs"
-      fullWidth={true}
+      fullWidth
       open={open}
       onClose={(event) => {
         event.preventDefault()
@@ -36,7 +36,6 @@ const ConfirmDialog = (props) => {
         <Button
           variant="text"
           onClick={onClose}
-          style={{ texttransform: "none" }}
         >
           Batal
         </Button>

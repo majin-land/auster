@@ -50,12 +50,14 @@ module.exports = {
     await queryInterface.addIndex('Record', {
       name: 'record_category_id_index',
       fields: ['category_id'],
-    }, { transaction })
+      transaction,
+    })
 
     await queryInterface.addIndex('Record', {
       name: 'record_user_id_index',
       fields: ['user_id'],
-    }, { transaction })
+      transaction,
+    })
   }),
   down: (queryInterface) => {
     return queryInterface.dropTable('Record')

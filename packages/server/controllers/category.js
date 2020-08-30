@@ -1,9 +1,15 @@
 const router = require('express').Router()
+const { Op } = require('sequelize')
 
 const { Category } = require('../models')
 
 router.get('/', async (req, res) => {
   const result = await Category.findAndCountAll({
+    where: {
+      userId: {
+        [Op.or]: [null, req.currentUser.id],
+      },
+    },
     order: [['id', 'ASC']],
   })
 
@@ -25,9 +31,13 @@ router.get('/:id', async (req, res) => {
 })
 
 router.post('/', async (req, res) => {
-  const category = await Category.create({
+  const params = {
     name: req.body.name,
-  })
+    type: req.body.type,
+    userId: req.currentUser.id,
+  }
+
+  const category = await Category.create(params)
 
   res.json(category.display())
 })

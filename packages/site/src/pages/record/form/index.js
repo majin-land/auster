@@ -147,8 +147,8 @@ const RecordForm = (props) => {
         open={categoryDialog}
         selectedCategory={record.category}
         onClose={() => setCategoryDialog(false)}
-        onSelectCategory={(category) => {
-          setRecord({ ...record, category })
+        onSelectCategory={(cat) => {
+          setRecord({ ...record, cat })
           setCategoryDialog(false)
         }}
       />

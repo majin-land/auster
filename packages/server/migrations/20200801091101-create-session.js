@@ -31,12 +31,14 @@ module.exports = {
     await queryInterface.addIndex('Session', {
       name: 'session_user_id_index',
       fields: ['user_id'],
-    }, { transaction })
+      transaction,
+    })
 
     await queryInterface.addIndex('Session', {
       name: 'session_token_index',
       fields: ['token'],
-    }, { transaction })
+      transaction,
+    })
   }),
   down: (queryInterface) => {
     return queryInterface.dropTable('Session')
