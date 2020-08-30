@@ -13,7 +13,10 @@ export const usePrevious = (value) => {
 }
 
 // https://medium.com/better-programming/react-state-management-in-2020-719d10c816bf
-export const useRequest = (api, options = { blocking: false }) => {
+export const useRequest = (api, options = {
+  blocking: false, // set to true, if dont allow concurrent request
+  skipGlobalError: false, // set to true, if dont want to use global notification error bar
+}) => {
   const [isLoading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [response, setResponse] = useState(null)
@@ -33,6 +36,7 @@ export const useRequest = (api, options = { blocking: false }) => {
       throw errorHandler(resp)
     } catch (err) {
       setError(err)
+      if (options.skipGlobalError) return null
       setErrors([
         ...errors,
         err,

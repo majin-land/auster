@@ -47,7 +47,7 @@ const Record = () => {
   const [user] = useGlobalState('user')
   const [, selectRecord] = useGlobalState('selectedRecord')
 
-  const [recordList, setRecordList] = useState({})
+  const [recordList, setRecordList] = useState([])
   const [transactionTabIndex, setTransactionTabIndex] = useState(1)
   const [anchorEl, setAnchorEl] = useState(null)
   const [startDate, setStartDate] = useState(moment().startOf('month').format('YYYY-MM-DD'))
