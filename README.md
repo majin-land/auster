@@ -27,3 +27,8 @@ http://localhost:4020 will be React web app
 for NodeJS server you can test with these links to check if it work
 1. http://localhost:4010/public/time will return server time
 1. http://localhost:4010/public/hello/majin will return 'Hello, Majin!'
+
+in seed data, we have added one user for testing,
+login with
+username: user@email.com
+password: password
