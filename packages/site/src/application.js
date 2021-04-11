@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import { hot } from 'react-hot-loader/root'
-import { setConfig } from 'react-hot-loader'
 import { makeStyles } from '@material-ui/core/styles'
 
-import { ENV } from 'site/config'
-import { useGlobalState } from 'site/state'
+import { useGlobalState, saveState } from 'site/state'
 import { RoutesNotLoggedIn, RoutesLoggedIn } from 'site/routes'
 import { fetchCurrentUser } from 'site/services'
 import { setApiAuth } from 'site/services/api'
+import { useApiRequest } from 'site/hooks'
 
 import NotificationBar from 'site/components/notification-bar'
 
@@ -17,15 +15,42 @@ const useStyles = makeStyles(styles)
 
 const App = () => {
   const classes = useStyles()
-  const [accessToken] = useGlobalState('accessToken')
+  const [accessToken, setAccessToken] = useGlobalState('accessToken')
+  const [, setUser] = useGlobalState('user')
   const [errors, setErrors] = useGlobalState('errors')
-  const [init, setInit] = useState(!accessToken)
+  const [init, setInit] = useState(false)
   const [error, setError] = useState(null)
 
-  if (accessToken) {
+  const {
+    request: fetchCurrentUserRequest,
+  } = useApiRequest(fetchCurrentUser, { defaultLoading: true })
+
+  useEffect(() => {
+    if (!accessToken) {
+      setInit(true)
+      return
+    }
+
     setApiAuth(accessToken)
-    fetchCurrentUser().finally(() => { setInit(true) })
-  }
+
+    const fetchUser = async () => {
+      try {
+        const res = await fetchCurrentUserRequest()
+        console.log('res', res)
+        if (!res) {
+          console.log('clear AUTH')
+          setApiAuth(null)
+          setAccessToken(null)
+          setUser(null)
+          saveState()
+        }
+      } finally {
+        setInit(true)
+      }
+    }
+
+    fetchUser()
+  }, [])
 
   useEffect(() => {
     if (errors.length === 0) return
@@ -48,6 +73,4 @@ const App = () => {
   )
 }
 
-if (ENV !== 'PROD') setConfig({ logLevel: 'debug', trackTailUpdates: false })
-
-export default hot(App)
+export default App

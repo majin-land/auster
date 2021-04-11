@@ -275,7 +275,8 @@ module.exports = {
       updated_at: new Date(),
     }], { transaction })
   }),
-  down: (queryInterface) => {
-    return queryInterface.sequelize.query('DELETE FROM "Category";')
+  down: async (queryInterface) => {
+    await queryInterface.bulkDelete({ tableName: 'Record', truncate: true, cascade: true })
+    await queryInterface.bulkDelete({ tableName: 'Category', truncate: true, cascade: true })
   },
 }

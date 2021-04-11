@@ -8,7 +8,6 @@ const cors = require('cors')
 const helmet = require('helmet')
 const requestIp = require('request-ip')
 const useragent = require('express-useragent')
-const { Sequelize } = require('sequelize')
 const { Umzug, SequelizeStorage } = require('umzug')
 
 const { auth } = require('./middlewares/auth')
@@ -81,11 +80,11 @@ app.use((req, res) => {
 })
 
 const umzug = new Umzug({
-  logging: console.log,
+  logger: console,
   storage: new SequelizeStorage({ sequelize: db }),
+  context: db.getQueryInterface(),
   migrations: {
-    path: './migrations',
-    params: [db.getQueryInterface(), Sequelize],
+    glob: './migrations/*.js',
   },
 })
 

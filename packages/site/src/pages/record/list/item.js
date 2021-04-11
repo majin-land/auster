@@ -1,6 +1,6 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import classnames from 'classnames'
+import clsx from 'clsx'
 import {
   Paper,
   Typography,
@@ -22,7 +22,7 @@ const RecordListItem = (props) => {
   return (
     <Paper
       key={record.id}
-      className={classnames(classes.recordItem, {
+      className={clsx(classes.recordItem, {
         [classes.selectedRecord]: record.id === selectedRecord.id,
         [classes.normalRecord]: record.id !== selectedRecord.id,
       })}

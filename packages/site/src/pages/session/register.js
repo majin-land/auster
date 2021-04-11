@@ -11,7 +11,7 @@ import {
   CardActions,
 } from '@material-ui/core'
 
-import { useRequest } from 'site/hooks'
+import { useApiRequest } from 'site/hooks'
 import { useGlobalState, saveState } from 'site/state'
 import { register, fetchCurrentUser } from 'site/services'
 import { setApiAuth } from 'site/services/api'
@@ -30,7 +30,7 @@ const Register = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
-  const { isLoading, request } = useRequest(register)
+  const { isLoading, request } = useApiRequest(register, {})
   const [, setAccessToken] = useGlobalState('accessToken')
   const [, setUser] = useGlobalState('user')
 

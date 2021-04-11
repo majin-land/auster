@@ -7,7 +7,7 @@ global.DEBUG = false
 
 // Bundle JavaScript, CSS and image files with Webpack
 const bundle = task('bundle', () => {
-  const webpackConfig = require('./webpack.config')
+  const webpackConfig = require('../webpack.config')
   return new Promise((resolve, reject) => {
     webpack(webpackConfig).run((err, stats) => {
       if (err) {

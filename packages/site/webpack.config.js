@@ -18,10 +18,13 @@ const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin')
 const CopyPlugin = require('copy-webpack-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+const svgToMiniDataURI = require('mini-svg-data-uri')
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin')
 
 const isVerbose = process.argv.includes('--verbose') || process.argv.includes('-v')
 
-const babelConfig = require('../babel.config.js')
+const packageJson = require('./package.json')
+const babelConfig = require('./babel.config.js')
 
 const analyze = process.argv.includes('analyze') || false
 
@@ -35,20 +38,22 @@ const config = {
 
   mode: isDebug ? 'development' : 'production',
 
+  bail: !isDebug,
+
   // The base directory for resolving the entry option
-  context: path.resolve(__dirname, '../src'),
 
   // The entry point for the bundle
   entry: [
-    './index.js',
+    './src/index.js',
   ],
 
   // Options affecting the output of the compilation
   output: {
-    path: path.resolve(__dirname, '../dist'),
+    path: path.resolve(__dirname, 'dist'),
     publicPath: '/',
-    filename: isDebug ? '[name].[hash].js' : '[name].[contenthash].js',
-    chunkFilename: isDebug ? '[name].[hash].js' : '[name].[contenthash].js',
+    assetModuleFilename: 'assets/[hash][ext][query]',
+    filename: '[name].[contenthash].js',
+    chunkFilename: '[name].[contenthash].js',
   },
 
   // Developer tool to enhance debugging, source maps
@@ -58,7 +63,7 @@ const config = {
   resolve: {
     symlinks: false,
     alias: {
-      site: path.resolve(__dirname, '../src'),
+      site: path.resolve(__dirname, 'src'),
     },
   },
 
@@ -82,9 +87,12 @@ const config = {
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': isDebug ? '"development"' : '"production"',
       __ENV__: `'${TARGET}'`,
-      __VERSION__: JSON.stringify(require('../package.json').version),
+      __VERSION__: JSON.stringify(packageJson.version),
     }),
-    new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+    new webpack.IgnorePlugin({
+      resourceRegExp: /^\.\/locale$/,
+      contextRegExp: /moment$/,
+    }),
     new webpack.LoaderOptionsPlugin({
       debug: isDebug,
       minimize: !isDebug,
@@ -95,7 +103,7 @@ const config = {
       silent: true, // hide any errors
     }),
     new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, '../index.ejs'),
+      template: path.resolve(__dirname, 'index.ejs'),
       config: { ENV },
       hash: isDebug,
       minify: {
@@ -110,7 +118,7 @@ const config = {
     new CaseSensitivePathsPlugin(),
     new CopyPlugin({
       patterns: [
-        path.resolve(__dirname, '../assets'),
+        path.resolve(__dirname, 'assets'),
       ],
     }),
   ],
@@ -122,7 +130,7 @@ const config = {
         test: /\.js$/,
         exclude: [/[/\\\\]node_modules[/\\\\]/], // exclude node_modules folder per default
         include: [
-          path.resolve(__dirname, '../src'),
+          path.resolve(__dirname, 'src'),
         ],
         use: [
           {
@@ -146,11 +154,17 @@ const config = {
         ],
       },
       {
-        test: /\.(png|jpg|jpeg|gif|svg|woff|woff2|ico|eot|ttf|wav|mp3|csv|mp4)$/,
-        loader: 'file-loader',
-        query: {
-          name: '[name].[ext]',
+        test: /\.svg/,
+        type: 'asset/inline',
+        generator: {
+          dataUrl: content => {
+            return svgToMiniDataURI(content.toString())
+          },
         },
+      },
+      {
+        test: /\.(png|jpg|jpeg|gif|woff|woff2|ico|eot|ttf|wav|mp3|csv|mp4)$/,
+        type: 'asset/resource',
       },
     ],
   },
@@ -158,32 +172,28 @@ const config = {
 
 // Optimize the bundle in release (production) mode
 if (!isDebug) {
-  config.plugins.push(new webpack.optimize.OccurrenceOrderPlugin())
   config.plugins.push(new webpack.optimize.AggressiveMergingPlugin())
-  config.plugins.push(new webpack.HashedModuleIdsPlugin())
   config.plugins.push(new MiniCssExtractPlugin({
-    filename: '[name].[hash].css',
-    chunkFilename: '[id].[hash].css',
+    filename: '[name].[contenthash].css',
+    chunkFilename: '[id].[contenthash].css',
   }))
   config.optimization = {
     nodeEnv: 'production',
     minimize: true,
     removeEmptyChunks: true,
     mergeDuplicateChunks: true,
-    runtimeChunk: 'single',
+    emitOnErrors: true,
+    runtimeChunk: 'multiple',
     splitChunks: {
       chunks: 'all',
     },
   }
 } else {
-  config.entry.unshift('react-hot-loader/patch')
-  config.resolve.alias['react-dom'] = '@hot-loader/react-dom'
-  config.plugins.push(new webpack.HotModuleReplacementPlugin())
-  config.plugins.push(new webpack.NoEmitOnErrorsPlugin())
+  config.plugins.push(new ReactRefreshWebpackPlugin())
   config.devServer = {
     host: '0.0.0.0',
     port: PORT,
-    contentBase: path.resolve(__dirname, '../dist'),
+    contentBase: path.resolve(__dirname, 'dist'),
     compress: false,
     open: true,
     hot: true,
@@ -194,6 +204,7 @@ if (!isDebug) {
     removeAvailableModules: false,
     removeEmptyChunks: false,
     splitChunks: false,
+    emitOnErrors: true,
   }
 }
 

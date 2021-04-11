@@ -6,7 +6,7 @@ module.exports = {
           type: Sequelize.UUID,
           allowNull: false,
           primaryKey: true,
-          defaultValue: Sequelize.UUIDV4,
+          defaultValue: Sequelize.literal('uuid_generate_v4()'),
         },
         name: {
           type: Sequelize.TEXT,

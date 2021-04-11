@@ -3,13 +3,13 @@ import {
   Button,
 } from '@material-ui/core'
 
-import { useRequest } from 'site/hooks'
+import { useApiRequest } from 'site/hooks'
 import { logout } from 'site/services'
 import { useGlobalState, saveState } from 'site/state'
 import { setApiAuth } from 'site/services/api'
 
 const LogoutButton = () => {
-  const { isLoading, request: logoutRequest } = useRequest(logout)
+  const { isLoading, request: logoutRequest } = useApiRequest(logout, {})
 
   const [, setAccessToken] = useGlobalState('accessToken')
   const [, setUser] = useGlobalState('user')

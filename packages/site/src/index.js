@@ -25,7 +25,3 @@ ReactDOM.render((
     </ThemeProvider>
   </MuiPickersUtilsProvider>
 ), appRoot)
-
-if (module.hot) {
-  module.hot.accept()
-}
